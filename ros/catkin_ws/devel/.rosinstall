@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/owner/git/RobotarmSimulation/ros/catkin_ws/devel/setup.sh

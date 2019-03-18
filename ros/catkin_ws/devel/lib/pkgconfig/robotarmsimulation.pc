@@ -1,0 +1,8 @@
+prefix=/home/owner/git/RobotarmSimulation/ros/catkin_ws/devel
+
+Name: robotarmsimulation
+Description: Description of robotarmsimulation
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/owner/git/RobotarmSimulation/ros/catkin_ws/devel/lib 
+Requires: 
