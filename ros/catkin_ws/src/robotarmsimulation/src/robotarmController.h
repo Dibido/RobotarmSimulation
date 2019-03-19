@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <vector>
 
 class RobotarmController
 {
@@ -19,8 +20,16 @@ class RobotarmController
     ros::Subscriber mRobotarmCommandSubscriber;
     ros::Publisher mRobotarmPublisher;
 
-    // Robotarm position variables
+    void initializeCommunication();
+    void initializeVales();
 
+    // Robotarm position variables
+    std::vector<std::string> mJointNames;
+    std::vector<double> mJointPositions;
+
+    void sendCurrentStateToVisualizer();
+
+    void handleCommand(std::string aCommand);
 
     void robotarmCommandCallback(const std_msgs::String::ConstPtr& aRobotarmCommand);
 };
