@@ -1,9 +1,13 @@
 #include "robotarmController.hpp"
+#include "cup.hpp"
 
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "robotarmController");
   RobotarmController lRobotarmController;
+
+  Cup c("test");
+
   ros::spin();
   return 0;
 }

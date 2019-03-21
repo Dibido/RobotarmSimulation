@@ -37,9 +37,14 @@ void Cup::publishCup()
         marker.pose.orientation.w = 1.0;
         marker.scale.x = 0.1;
         marker.scale.y = 0.1;
-        marker.scale.z = 0.05;
+        marker.scale.z = 0.2;
         marker.lifetime = ros::Duration();
-        marker.color.a = 1;
+
+        // Set the color -- be sure to set alpha to something non-zero!
+        marker.color.r = 0.0f;
+        marker.color.g = 1.0f;
+        marker.color.b = 0.0f;
+        marker.color.a = 1.0;
 
         marker_pub.publish(marker);
     }

@@ -136,7 +136,7 @@ include_directories(
 add_executable(robotarmClient src/robotarmClient.cpp)
 target_link_libraries(robotarmClient ${catkin_LIBRARIES})
 
-add_executable(robotarmController src/robotarmController.cpp)
+add_executable(robotarmController src/robotarmController.cpp src/cup.cpp)
 target_link_libraries(robotarmController ${catkin_LIBRARIES})
 
 ## Rename C++ executable without prefix
