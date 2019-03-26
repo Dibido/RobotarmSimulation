@@ -12,15 +12,14 @@ int main(int argc, char** argv)
   {
     sleep(1);
     std_msgs::String msg;
-
-    std::stringstream ss;
-    ss << "#0P500#1P600#2P700#3P800#4P900#5P1600T3000\n";
-    msg.data = ss.str();
-
+    msg.data = "#0P500#1P600#2P700#3P800#4P900#5P1600T3000\n";
     ROS_INFO("sending command : %s", msg.data.c_str());
-
     lRobotarmCommandPublisher.publish(msg);
-
+    ros::spinOnce();
+    sleep(5);
+    msg.data = "#01500#1P1500#2P1500#3P1500#4P1500#5P1500T3000\n";
+    ROS_INFO("sending command : %s", msg.data.c_str());
+    lRobotarmCommandPublisher.publish(msg);
     ros::spinOnce();
     sleep(1);
   }

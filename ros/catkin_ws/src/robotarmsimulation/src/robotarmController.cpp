@@ -36,8 +36,8 @@ void RobotarmController::initializeValues()
 
 void RobotarmController::sendCurrentStateToVisualizer()
 {
-  while (ros::ok())
-  {
+  // while (ros::ok())
+  // {
     sensor_msgs::JointState lMessage;
     lMessage.header.frame_id = "/base_link";
     lMessage.header.stamp = ros::Time::now();
@@ -45,7 +45,7 @@ void RobotarmController::sendCurrentStateToVisualizer()
     lMessage.position = mJointPositions;
     mRobotarmPublisher.publish(lMessage);
     // std::cout << lMessage << std::endl;
-  }
+  // }
 }
 
 void RobotarmController::handleCommand(std::string aCommand)
@@ -82,6 +82,7 @@ void RobotarmController::handleCommand(std::string aCommand)
     mJointPositions.at(i) = lJointPulseWidths.at(i);
   }
   sendCurrentStateToVisualizer();
+  lJointPulseWidths.clear();
 }
 
 void RobotarmController::robotarmCommandCallback(const std_msgs::String::ConstPtr& aRobotarmCommand)
