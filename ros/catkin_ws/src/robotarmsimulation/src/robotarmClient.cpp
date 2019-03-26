@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     std_msgs::String msg;
 
     std::stringstream ss;
-    ss << "#5P1600#10P750T2500\n";
+    ss << "#0P500#1P600#2P700#3P800#4P900#5P1600T3000\n";
     msg.data = ss.str();
 
     ROS_INFO("sending command : %s", msg.data.c_str());

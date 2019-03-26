@@ -10,6 +10,11 @@
 #include <string>
 #include <vector>
 
+#define MINSIMULATEDDEGREES -3.14
+#define MAXSIMULATEDDEGREES 3.14
+#define MINPULSEWIDTH 500
+#define MAXPULSEWIDTH 2500
+
 class RobotarmController
 {
   public:
@@ -21,7 +26,7 @@ class RobotarmController
     ros::Publisher mRobotarmPublisher;
 
     void initializeCommunication();
-    void initializeVales();
+    void initializeValues();
 
     // Robotarm position variables
     std::vector<std::string> mJointNames;
@@ -32,6 +37,17 @@ class RobotarmController
     void handleCommand(std::string aCommand);
 
     void robotarmCommandCallback(const std_msgs::String::ConstPtr& aRobotarmCommand);
+
+      /**
+     * @brief Maps the value from the input range to the output range
+     * @param aDegree - The value to convert
+     * @param aInMin - The minimum value of the input range
+     * @param aInMax - The maximum value of the input range
+     * @param aOutMin - The minimum value of the output range
+     * @param aOutMax - The maximum value of the output range 
+     * @return unsigned int - The converted value
+     */
+    double mapValues(double aDegree, double aInMin, double aInMax, double aOutMin, double aOutMax) const;
 };
 
 #endif
