@@ -4,13 +4,15 @@
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "robotarmController");
-  //RobotarmController lRobotarmController;
+  RobotarmController lRobotarmController;
 
   Cup c("test");
   while (ros::ok())
   {
+    ros::spinOnce();
     c.showCup();
   }
+  // ros::spin();
   return 0;
 }
 
