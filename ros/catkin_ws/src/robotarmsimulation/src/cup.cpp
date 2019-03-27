@@ -1,5 +1,7 @@
 #include "cup.hpp"
 
+std::string static_name;
+
 Cup::Cup(std::string aTopic)
 {
     marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
@@ -13,23 +15,39 @@ Cup::~Cup()
 void Cup::publishCup()
 {
 
-    uint32_t shape = visualization_msgs::Marker::CYLINDER;
+    static_name = "base_link";
+    //Frame
+    static tf2_ros::StaticTransformBroadcaster static_broadcaster;
+    geometry_msgs::TransformStamped static_transformStamped;
+    static_transformStamped.header.stamp = ros::Time::now();
+    static_transformStamped.header.frame_id = "cup";
+    static_transformStamped.child_frame_id = static_name;
+    static_transformStamped.transform.translation.x = 1;
+    static_transformStamped.transform.translation.y = 1;
+    static_transformStamped.transform.translation.z = 0;
+    tf2::Quaternion quat;
+
+    quat.setRPY(0, 0, 0);
+    static_transformStamped.transform.rotation.x = quat.x();
+    static_transformStamped.transform.rotation.y = quat.y();
+    static_transformStamped.transform.rotation.z = quat.z();
+    static_transformStamped.transform.rotation.w = quat.w();
+    static_broadcaster.sendTransform(static_transformStamped);
+
+    //object
 
     while (ros::ok())
     {
         visualization_msgs::Marker marker;
-
-        marker.header.frame_id = "/base_link";
+        marker.header.frame_id = "/cup";
         marker.header.stamp = ros::Time::now();
-
         marker.ns = "cup";
         marker.id = 0;
-
-        marker.type = shape;
+        marker.type = visualization_msgs::Marker::CYLINDER;
         marker.action = visualization_msgs::Marker::ADD;
 
-        marker.pose.position.x = 1;
-        marker.pose.position.y = 1;
+        marker.pose.position.x = 0;
+        marker.pose.position.y = 0;
         marker.pose.position.z = 0;
         marker.pose.orientation.x = 0.0;
         marker.pose.orientation.y = 0.0;
@@ -40,7 +58,6 @@ void Cup::publishCup()
         marker.scale.z = 0.2;
         marker.lifetime = ros::Duration();
 
-        // Set the color -- be sure to set alpha to something non-zero!
         marker.color.r = 0.0f;
         marker.color.g = 1.0f;
         marker.color.b = 0.0f;
@@ -48,4 +65,8 @@ void Cup::publishCup()
 
         marker_pub.publish(marker);
     }
+
+    //ros::spin();
+
+    ROS_INFO("Spinning until killed publ");
 }

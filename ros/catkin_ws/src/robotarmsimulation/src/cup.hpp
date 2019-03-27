@@ -5,6 +5,11 @@
 #include <iostream>
 
 #include <ros/ros.h>
+#include <tf2_ros/static_transform_broadcaster.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <cstdio>
+#include <tf2/LinearMath/Quaternion.h>
+
 #include <visualization_msgs/Marker.h>
 
 class Cup
