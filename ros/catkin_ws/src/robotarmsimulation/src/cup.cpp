@@ -57,7 +57,6 @@ void Cup::publishCup()
     static_transformStamped.transform.rotation.z = quat.z();
     static_transformStamped.transform.rotation.w = quat.w();
     static_broadcaster.sendTransform(static_transformStamped);
-    ROS_INFO("Spinning until killed publ");
 }
 
 void Cup::showCup()
@@ -115,8 +114,16 @@ void Cup::handleCollision()
     tf::TransformListener echoListener;
 
     tf::StampedTransform leftGripperTransform;
-    echoListener.lookupTransform("/base_link", "/gripper_left", ros::Time(), leftGripperTransform);
     
+    try{
+      echoListener.lookupTransform("base_link", "gripper_left", ros::Time(), leftGripperTransform);
+
+    }
+    catch (tf::TransformException ex){
+      ROS_ERROR("%s",ex.what());
+      ros::Duration(1.0).sleep();
+    }
+
     
     std::cout << "X" << leftGripperTransform.getOrigin().x() << std::endl;
     std::cout << "Y" << leftGripperTransform.getOrigin().y() << std::endl;
