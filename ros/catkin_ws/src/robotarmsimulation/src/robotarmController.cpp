@@ -1,20 +1,17 @@
 #include "robotarmController.hpp"
-#include "cup.hpp"
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "robotarmController");
   RobotarmController lRobotarmController;
 
-  Cup c("test");
+
   while (ros::ok())
   {
     ros::spinOnce();
     lRobotarmController.updateRobotArmPosition();
-    c.showCup();
-    c.handleCollision();
+    
   }
-  // ros::spin();
   return 0;
 }
 

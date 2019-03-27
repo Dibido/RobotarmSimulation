@@ -1,6 +1,15 @@
 #include "cup.hpp"
 
-std::string static_name;
+int main(int argc, char **argv)
+{
+  ros::init(argc, argv, "cup");
+
+  Cup c("test");
+  c.showCup();
+  c.handleCollision();
+
+  return 0;
+}
 
 Cup::Cup(std::string aTopic)
 {
@@ -32,13 +41,11 @@ void Cup::publishCup()
   // static_transformStamped.transform.rotation.w = quat.w();
   // static_broadcaster.sendTransform(static_transformStamped);
 
-  static_name = "base_link";
-    //Frame
     static tf2_ros::StaticTransformBroadcaster static_broadcaster;
     geometry_msgs::TransformStamped static_transformStamped;
     static_transformStamped.header.stamp = ros::Time::now();
-    static_transformStamped.header.frame_id = "cup";
-    static_transformStamped.child_frame_id = static_name;
+    static_transformStamped.header.frame_id = "base_link";
+    static_transformStamped.child_frame_id = "cup";
     static_transformStamped.transform.translation.x = 1;
     static_transformStamped.transform.translation.y = 1;
     static_transformStamped.transform.translation.z = 0;
@@ -59,7 +66,7 @@ void Cup::showCup()
   visualization_msgs::Marker marker;
   marker.header.frame_id = "cup";
   marker.header.stamp = ros::Time::now();
-  marker.ns = "cup";
+  marker.ns = "cupObject";
   marker.id = 0;
   marker.type = visualization_msgs::Marker::CYLINDER;
   marker.action = visualization_msgs::Marker::ADD;
@@ -86,30 +93,40 @@ void Cup::showCup()
 
 void Cup::handleCollision()
 {
-  tf::TransformListener listener;
+  // tf::TransformListener listener;
 
-  // ros::Rate rate(10.0);
-  // while (n.ok()){
-    tf::StampedTransform transform;
-    try
-    {
-      listener.lookupTransform("/cup", "/gripper_left", ros::Time(0), transform);
-    }
-    catch (tf::TransformException ex)
-    {
-      ROS_ERROR("%s",ex.what());
-      ros::Duration(1.0).sleep();
-    }
+  // // ros::Rate rate(10.0);
+  // // while (n.ok()){
+  //   tf::StampedTransform transform;
+  //   try
+  //   {
+  //     listener.lookupTransform("/cup", "/gripper_left", ros::Time(0), transform);
+  //   }
+  //   catch (tf::TransformException ex)
+  //   {
+  //     ROS_ERROR("%s",ex.what());
+  //     ros::Duration(1.0).sleep();
+  //   }
 
-    std::cout << "X" << transform.getOrigin().x() << std::endl;
-    std::cout << "Y" << transform.getOrigin().y() << std::endl;
+  ros::Rate rate(10.0);
+  while (n.ok()){
+    showCup();
 
-    // turtlesim::Velocity vel_msg;
-    // vel_msg.angular = 4.0 * atan2(transform.getOrigin().y(),
-    //                             transform.getOrigin().x());
-    // vel_msg.linear = 0.5 * sqrt(pow(transform.getOrigin().x(), 2) +
-    //                             pow(transform.getOrigin().y(), 2));
+    tf::TransformListener echoListener;
 
-    // rate.sleep();
-  // }
+    tf::StampedTransform leftGripperTransform;
+    echoListener.lookupTransform("/base_link", "/gripper_left", ros::Time(), leftGripperTransform);
+    
+    
+    std::cout << "X" << leftGripperTransform.getOrigin().x() << std::endl;
+    std::cout << "Y" << leftGripperTransform.getOrigin().y() << std::endl;
+
+  //   // turtlesim::Velocity vel_msg;
+  //   // vel_msg.angular = 4.0 * atan2(transform.getOrigin().y(),
+  //   //                             transform.getOrigin().x());
+  //   // vel_msg.linear = 0.5 * sqrt(pow(transform.getOrigin().x(), 2) +
+  //   //                             pow(transform.getOrigin().y(), 2));
+
+    rate.sleep();
+   }
 }
