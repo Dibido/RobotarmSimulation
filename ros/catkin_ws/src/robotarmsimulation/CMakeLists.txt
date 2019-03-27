@@ -9,10 +9,12 @@ project(robotarmsimulation)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  tf
   tf2
   tf2_ros
   roscpp
   visualization_msgs
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions

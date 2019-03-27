@@ -3,14 +3,19 @@
 
 #include <string>
 #include <iostream>
-
-#include <ros/ros.h>
-#include <tf2_ros/static_transform_broadcaster.h>
-#include <geometry_msgs/TransformStamped.h>
 #include <cstdio>
-#include <tf2/LinearMath/Quaternion.h>
+#include <ros/ros.h>
 
+
+//
+// #include <tf/transform_broadcaster.h>
+#include <tf2_ros/static_transform_broadcaster.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf/transform_listener.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <geometry_msgs/Twist.h>
 #include <visualization_msgs/Marker.h>
+//
 
 class Cup
 {
@@ -18,6 +23,7 @@ public:
   Cup(std::string aTopic);
   ~Cup();
   void showCup();
+  void handleCollision();
 
 private:
   std::string topic;

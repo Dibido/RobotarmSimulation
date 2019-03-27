@@ -12,6 +12,7 @@ int main(int argc, char **argv)
     ros::spinOnce();
     lRobotarmController.updateRobotArmPosition();
     c.showCup();
+    c.handleCollision();
   }
   // ros::spin();
   return 0;
@@ -77,6 +78,7 @@ void RobotarmController::updateRobotArmPosition()
   else
   {
     mReachedPosition = true;
+    sendCurrentStateToVisualizer();
   }
 }
 
