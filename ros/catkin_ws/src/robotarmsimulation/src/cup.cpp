@@ -33,40 +33,44 @@ void Cup::publishCup()
     static_transformStamped.transform.rotation.z = quat.z();
     static_transformStamped.transform.rotation.w = quat.w();
     static_broadcaster.sendTransform(static_transformStamped);
-
-    //object
-
-    while (ros::ok())
-    {
-        visualization_msgs::Marker marker;
-        marker.header.frame_id = "/cup";
-        marker.header.stamp = ros::Time::now();
-        marker.ns = "cup";
-        marker.id = 0;
-        marker.type = visualization_msgs::Marker::CYLINDER;
-        marker.action = visualization_msgs::Marker::ADD;
-
-        marker.pose.position.x = 0;
-        marker.pose.position.y = 0;
-        marker.pose.position.z = 0;
-        marker.pose.orientation.x = 0.0;
-        marker.pose.orientation.y = 0.0;
-        marker.pose.orientation.z = 0.0;
-        marker.pose.orientation.w = 1.0;
-        marker.scale.x = 0.1;
-        marker.scale.y = 0.1;
-        marker.scale.z = 0.2;
-        marker.lifetime = ros::Duration();
-
-        marker.color.r = 0.0f;
-        marker.color.g = 1.0f;
-        marker.color.b = 0.0f;
-        marker.color.a = 1.0;
-
-        marker_pub.publish(marker);
-    }
-
-    //ros::spin();
-
     ROS_INFO("Spinning until killed publ");
+}
+
+void Cup::showCup()
+{
+    visualization_msgs::Marker marker;
+    marker.header.frame_id = "/cup";
+    marker.header.stamp = ros::Time::now();
+    marker.ns = "cup";
+    marker.id = 0;
+    marker.type = visualization_msgs::Marker::CYLINDER;
+    marker.action = visualization_msgs::Marker::ADD;
+
+    marker.pose.position.x = 0;
+    marker.pose.position.y = 0;
+    marker.pose.position.z = 0;
+    marker.pose.orientation.x = 0.0;
+    marker.pose.orientation.y = 0.0;
+    marker.pose.orientation.z = 0.0;
+    marker.pose.orientation.w = 1.0;
+    marker.scale.x = 0.1;
+    marker.scale.y = 0.1;
+    marker.scale.z = 0.2;
+    marker.lifetime = ros::Duration();
+
+    marker.color.r = 0.0f;
+    marker.color.g = 1.0f;
+    marker.color.b = 0.0f;
+    marker.color.a = 1.0;
+
+
+    // tf::StampedTransform leftGripperTransform;
+    // echoListener.lookupTransform(source_frameid, gripperLeftTarget, ros::Time(), leftGripperTransform);
+    // tf::StampedTransform rightGripperTransform;
+    // echoListener.lookupTransform(source_frameid, gripperRightTarget, ros::Time(), rightGripperTransform);
+
+    // std::cout << leftGripperTransform.getOrigin() << std::endl;
+    // std::cout << rightGripperTransform.getOrigin() << std::endl;
+
+    marker_pub.publish(marker);
 }

@@ -17,6 +17,7 @@ class Cup
 public:
   Cup(std::string aTopic);
   ~Cup();
+  void showCup();
 
 private:
   std::string topic;
