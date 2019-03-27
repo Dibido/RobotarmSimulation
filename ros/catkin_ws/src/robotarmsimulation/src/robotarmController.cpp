@@ -10,6 +10,7 @@ int main(int argc, char **argv)
   while (ros::ok())
   {
     ros::spinOnce();
+    lRobotarmController.updateRobotArmPosition();
     c.showCup();
   }
   // ros::spin();
@@ -17,7 +18,14 @@ int main(int argc, char **argv)
 }
 
 RobotarmController::RobotarmController() : mJointNames{"base_link2turret", "turret2upperarm", "upperarm2forearm", "forearm2wrist", "wrist2hand", "gripper_left2hand"},
-                                           mJointPositions{0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
+                                           mJointPositions{0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+                                           mJointVelocities{0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+                                           mGoalPositions{0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+                                           mReachedPosition(false),
+                                           mMoveTime(0),
+                                           mMoveCount(0),
+                                           mMoveStartTime(std::chrono::high_resolution_clock::now()),
+                                           mPreviousMoveTime(std::chrono::high_resolution_clock::now())
 {
   initializeCommunication();
   initializeValues();
@@ -39,16 +47,37 @@ void RobotarmController::initializeValues()
 
 void RobotarmController::sendCurrentStateToVisualizer()
 {
-  // while (ros::ok())
-  // {
   sensor_msgs::JointState lMessage;
   lMessage.header.frame_id = "/base_link";
   lMessage.header.stamp = ros::Time::now();
   lMessage.name = mJointNames;
   lMessage.position = mJointPositions;
   mRobotarmPublisher.publish(lMessage);
-  // std::cout << lMessage << std::endl;
-  // }
+}
+
+void RobotarmController::updateRobotArmPosition()
+{
+  // If the position has not been reached and the time has not elapsed
+  auto lTime = std::chrono::high_resolution_clock::now();
+  if (!mReachedPosition && mJointPositions != mGoalPositions && mMoveCount < mMoveTime)
+  {
+    // Set the current position + velocity
+    auto lTime = std::chrono::high_resolution_clock::now();
+    if (std::chrono::duration_cast<std::chrono::milliseconds>(lTime - mPreviousMoveTime).count() > 1)
+    {
+      for (int i = 0; i < mJointPositions.size(); i++)
+      {
+        mJointPositions.at(i) += mJointVelocities.at(i);
+      }
+      sendCurrentStateToVisualizer();
+      mMoveCount++;
+      mPreviousMoveTime = std::chrono::high_resolution_clock::now();
+    }
+  }
+  else
+  {
+    mReachedPosition = true;
+  }
 }
 
 void RobotarmController::handleCommand(std::string aCommand)
@@ -57,35 +86,34 @@ void RobotarmController::handleCommand(std::string aCommand)
   std::string lOriginalString = aCommand;
   // Get the servo id's and pulsewidth
   std::string lSubstring;
-  std::vector<double> lJointPulseWidths;
+  mGoalPositions.clear();
   lSubstring = lOriginalString.substr(lOriginalString.find("#") + 1);
-  lJointPulseWidths.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("#")).c_str()));
+  mGoalPositions.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("#")).c_str()));
   lSubstring = lSubstring.substr(lSubstring.find("#") + 1);
-  lJointPulseWidths.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("#")).c_str()));
+  mGoalPositions.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("#")).c_str()));
   lSubstring = lSubstring.substr(lSubstring.find("#") + 1);
-  lJointPulseWidths.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("#")).c_str()));
+  mGoalPositions.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("#")).c_str()));
   lSubstring = lSubstring.substr(lSubstring.find("#") + 1);
-  lJointPulseWidths.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("#")).c_str()));
+  mGoalPositions.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("#")).c_str()));
   lSubstring = lSubstring.substr(lSubstring.find("#") + 1);
-  lJointPulseWidths.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("#")).c_str()));
+  mGoalPositions.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("#")).c_str()));
   lSubstring = lSubstring.substr(lSubstring.find("#") + 1);
-  lJointPulseWidths.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("T")).c_str()));
+  mGoalPositions.push_back(atoi(lSubstring.substr(lSubstring.find("P") + 1, lSubstring.find("T")).c_str()));
   // Get the time
-  unsigned int lTimeCommand = atoi(lSubstring.substr(lSubstring.find("T") + 1).c_str());
-  std::cout << "time : " << lTimeCommand << std::endl;
+  mMoveTime = atoi(lSubstring.substr(lSubstring.find("T") + 1).c_str());
   // Convert to angles
-  for (int i = 0; i < lJointPulseWidths.size(); i++)
+  for (int i = 0; i < mGoalPositions.size(); i++)
   {
-    std::cout << lJointPulseWidths.at(i) << " : " << mapValues(lJointPulseWidths.at(i), MINPULSEWIDTH, MAXPULSEWIDTH, MINSIMULATEDDEGREES, MAXSIMULATEDDEGREES) << std::endl;
-    lJointPulseWidths.at(i) = mapValues(lJointPulseWidths.at(i), MINPULSEWIDTH, MAXPULSEWIDTH, MINSIMULATEDDEGREES, MAXSIMULATEDDEGREES);
+    mGoalPositions.at(i) = mapValues(mGoalPositions.at(i), MINPULSEWIDTH, MAXPULSEWIDTH, MINSIMULATEDDEGREES, MAXSIMULATEDDEGREES);
   }
-  // Publish to joint_states
-  for (int i = 0; i < lJointPulseWidths.size(); i++)
+  // Calculate differences per millisecond from current position
+  for (int i = 0; i < mJointPositions.size(); i++)
   {
-    mJointPositions.at(i) = lJointPulseWidths.at(i);
+    mJointVelocities.at(i) = (mGoalPositions.at(i) - mJointPositions.at(i)) / mMoveTime;
   }
-  sendCurrentStateToVisualizer();
-  lJointPulseWidths.clear();
+  mReachedPosition = false;
+  mMoveCount = 0;
+  mMoveStartTime = std::chrono::high_resolution_clock::now();
 }
 
 void RobotarmController::robotarmCommandCallback(const std_msgs::String::ConstPtr &aRobotarmCommand)

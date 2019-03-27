@@ -9,6 +9,7 @@
 #include <cstring>
 #include <string>
 #include <vector>
+#include <chrono>
 
 #define MINSIMULATEDDEGREES -3.14
 #define MAXSIMULATEDDEGREES 3.14
@@ -20,10 +21,15 @@ class RobotarmController
   public:
     RobotarmController();
     ~RobotarmController();
+
+    void updateRobotArmPosition();
+
   private:
     ros::NodeHandle mNodeHandler;
     ros::Subscriber mRobotarmCommandSubscriber;
     ros::Publisher mRobotarmPublisher;
+
+    bool mReachedPosition;
 
     void initializeCommunication();
     void initializeValues();
@@ -31,6 +37,14 @@ class RobotarmController
     // Robotarm position variables
     std::vector<std::string> mJointNames;
     std::vector<double> mJointPositions;
+    std::vector<double> mGoalPositions;
+    std::vector<double> mJointVelocities;
+
+    unsigned int mMoveTime;
+    unsigned int mMoveCount;
+
+    std::chrono::high_resolution_clock::time_point mPreviousMoveTime;
+    std::chrono::high_resolution_clock::time_point mMoveStartTime;
 
     void sendCurrentStateToVisualizer();
 
