@@ -7,5 +7,3 @@
   <node name="cup" pkg="robotarmsimulation" type="cup"/>
 <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotarmsimulation)/lynxmotion.rviz" required="true" />
 </launch>
-
-

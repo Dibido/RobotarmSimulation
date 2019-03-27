@@ -32,6 +32,7 @@ private:
 
   ros::NodeHandle n;
   ros::Publisher marker_pub;
+  tf::TransformListener echoListener;
 };
 
 #endif

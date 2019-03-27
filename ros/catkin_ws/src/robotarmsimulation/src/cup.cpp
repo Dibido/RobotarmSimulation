@@ -111,13 +111,14 @@ void Cup::handleCollision()
   while (n.ok()){
     showCup();
 
-    tf::TransformListener echoListener;
+    
 
     tf::StampedTransform leftGripperTransform;
     
     try{
-      echoListener.lookupTransform("base_link", "gripper_left", ros::Time(), leftGripperTransform);
-
+      echoListener.lookupTransform("/cup", "/gripper_left", ros::Time(0), leftGripperTransform);
+      std::cout << "X" << leftGripperTransform.getOrigin().x() << std::endl;
+      std::cout << "Y" << leftGripperTransform.getOrigin().y() << std::endl;
     }
     catch (tf::TransformException ex){
       ROS_ERROR("%s",ex.what());
@@ -125,8 +126,7 @@ void Cup::handleCollision()
     }
 
     
-    std::cout << "X" << leftGripperTransform.getOrigin().x() << std::endl;
-    std::cout << "Y" << leftGripperTransform.getOrigin().y() << std::endl;
+
 
   //   // turtlesim::Velocity vel_msg;
   //   // vel_msg.angular = 4.0 * atan2(transform.getOrigin().y(),
