@@ -36,7 +36,7 @@ class Cup
 public:
   Cup(std::string aTopic);
   ~Cup();
-  void showCup();
+  void showCup(COLORS::ColorState color);
   void handleCollision();
 
 private:
@@ -44,6 +44,7 @@ private:
   void publishCup();
 
   void setColor(COLORS::ColorState color, visualization_msgs::Marker& marker);
+  bool isOpbjectInGripper(tf::StampedTransform& object);
 
 
   ros::NodeHandle n;

@@ -5,7 +5,6 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "cup");
 
   Cup c("test");
-  c.showCup();
   c.handleCollision();
 
   return 0;
@@ -41,7 +40,7 @@ void Cup::publishCup()
   static_broadcaster.sendTransform(static_transformStamped);
 }
 
-void Cup::showCup()
+void Cup::showCup(COLORS::ColorState color)
 {
   // std::cout << "Showing" << std::endl;
   visualization_msgs::Marker marker;
@@ -64,18 +63,18 @@ void Cup::showCup()
   marker.scale.z = CUP_SIZE * 2;
   marker.lifetime = ros::Duration();
 
-  setColor(COLORS::GREEN, marker);
+  setColor(color, marker);
 
   marker_pub.publish(marker);
 }
 
 void Cup::handleCollision()
 {
+  COLORS::ColorState color = COLORS::RED;
 
   ros::Rate rate(10.0);
   while (n.ok())
   {
-    showCup();
 
     tf::StampedTransform leftGripperTransform;
 
@@ -85,12 +84,19 @@ void Cup::handleCollision()
       std::cout << "X" << leftGripperTransform.getOrigin().x() << std::endl;
       std::cout << "Y" << leftGripperTransform.getOrigin().y() << std::endl;
       std::cout << "Z" << leftGripperTransform.getOrigin().z() << std::endl;
+
+      if (isOpbjectInGripper(leftGripperTransform))
+        color = COLORS::GREEN;
+      else
+        color = COLORS::RED;
     }
     catch (tf::TransformException ex)
     {
       ROS_ERROR("%s", ex.what());
       ros::Duration(1.0).sleep();
     }
+
+    showCup(color);
     rate.sleep();
   }
 }
@@ -114,4 +120,11 @@ void Cup::setColor(COLORS::ColorState color, visualization_msgs::Marker &marker)
     marker.color.a = 1.0;
     break;
   }
+}
+
+bool Cup::isOpbjectInGripper(tf::StampedTransform& object)
+{
+  return (object.getOrigin().y() > CUP_SIZE * -1 && object.getOrigin().y() < CUP_SIZE)
+          && (object.getOrigin().x() > CUP_SIZE * -1 && object.getOrigin().x() < CUP_SIZE)
+          && (object.getOrigin().z() > (CUP_SIZE*2) * -1 && object.getOrigin().z() < (CUP_SIZE*2));
 }
