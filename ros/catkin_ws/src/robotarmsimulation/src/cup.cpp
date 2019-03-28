@@ -27,9 +27,9 @@ void Cup::publishCup()
   static_transformStamped.header.stamp = ros::Time::now();
   static_transformStamped.header.frame_id = "base_link";
   static_transformStamped.child_frame_id = "cup";
-  static_transformStamped.transform.translation.x = CUP_POS_X;
-  static_transformStamped.transform.translation.y = CUP_POS_Y;
-  static_transformStamped.transform.translation.z = CUP_POS_Z;
+  static_transformStamped.transform.translation.x = cupPosX;
+  static_transformStamped.transform.translation.y = cupPosY;
+  static_transformStamped.transform.translation.z = cupPosZ;
   tf2::Quaternion quat;
 
   quat.setRPY(0, 0, 0);
@@ -54,9 +54,9 @@ void Cup::showCup(COLORS::ColorState color)
   marker.pose.position.x = 0;
   marker.pose.position.y = 0;
   marker.pose.position.z = CUP_SIZE;
-  marker.pose.orientation.x = 0.0;
-  marker.pose.orientation.y = 0.0;
-  marker.pose.orientation.z = 0.0;
+  marker.pose.orientation.x = 0;
+  marker.pose.orientation.y = 0;
+  marker.pose.orientation.z = 0;
   marker.pose.orientation.w = 1.0;
   marker.scale.x = CUP_SIZE;
   marker.scale.y = CUP_SIZE;
@@ -78,14 +78,31 @@ void Cup::handleCollision()
 
     tf::StampedTransform leftGripper;
     tf::StampedTransform rightGripper;
+    tf::StampedTransform newPosLeft;
+    tf::StampedTransform newPosRight;
 
     try
     {
       listener.lookupTransform("/cup", "/gripper_left", ros::Time(0), leftGripper);
       listener.lookupTransform("/cup", "/gripper_right", ros::Time(0), rightGripper);
+      listener.lookupTransform("/base_link", "/gripper_left", ros::Time(0), newPosLeft);
+      listener.lookupTransform("/base_link", "/gripper_right", ros::Time(0), newPosRight);
+
+      // std::cout << "X " << newPos.getOrigin().x() <<std::endl;
+      // std::cout << "Y " << newPos.getOrigin().y() <<std::endl;
+
 
       if (isOpbjectInGripper(leftGripper) && isOpbjectInGripper(rightGripper) )
+      {
+        std::cout << "Z " << newPosLeft.getOrigin().x() <<std::endl;
+
+        cupPosY = (newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2;
+        cupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
+        cupPosZ = (newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2;
+
+        publishCup();
         color = COLORS::GREEN;
+      }
       else
         color = COLORS::RED;
     }

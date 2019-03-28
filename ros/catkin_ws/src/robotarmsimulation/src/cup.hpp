@@ -15,10 +15,6 @@
 
 
 #define CUP_SIZE 0.04
-#define CUP_POS_X 0.4
-#define CUP_POS_Y 0
-#define CUP_POS_Z 0
-
 #define GRIPPER_DEPTH 0.01
 
 namespace COLORS
@@ -46,6 +42,9 @@ private:
   void setColor(COLORS::ColorState color, visualization_msgs::Marker& marker);
   bool isOpbjectInGripper(tf::StampedTransform& object);
 
+  float cupPosY = 0;
+  float cupPosX = 0.4;
+  float cupPosZ = CUP_SIZE / 2;
 
   ros::NodeHandle n;
   ros::Publisher marker_pub;
