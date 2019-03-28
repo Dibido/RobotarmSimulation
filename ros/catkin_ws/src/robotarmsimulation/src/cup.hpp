@@ -19,7 +19,7 @@
 #define CUP_POS_Y 0
 #define CUP_POS_Z 0
 
-
+#define GRIPPER_DEPTH 0.01
 
 namespace COLORS
 {
@@ -49,7 +49,7 @@ private:
 
   ros::NodeHandle n;
   ros::Publisher marker_pub;
-  tf::TransformListener echoListener;
+  tf::TransformListener listener;
 };
 
 #endif

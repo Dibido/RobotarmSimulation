@@ -76,16 +76,15 @@ void Cup::handleCollision()
   while (n.ok())
   {
 
-    tf::StampedTransform leftGripperTransform;
+    tf::StampedTransform leftGripper;
+    tf::StampedTransform rightGripper;
 
     try
     {
-      echoListener.lookupTransform("/cup", "/gripper_left", ros::Time(0), leftGripperTransform);
-      std::cout << "X" << leftGripperTransform.getOrigin().x() << std::endl;
-      std::cout << "Y" << leftGripperTransform.getOrigin().y() << std::endl;
-      std::cout << "Z" << leftGripperTransform.getOrigin().z() << std::endl;
+      listener.lookupTransform("/cup", "/gripper_left", ros::Time(0), leftGripper);
+      listener.lookupTransform("/cup", "/gripper_right", ros::Time(0), rightGripper);
 
-      if (isOpbjectInGripper(leftGripperTransform))
+      if (isOpbjectInGripper(leftGripper) && isOpbjectInGripper(rightGripper) )
         color = COLORS::GREEN;
       else
         color = COLORS::RED;
@@ -103,7 +102,6 @@ void Cup::handleCollision()
 
 void Cup::setColor(COLORS::ColorState color, visualization_msgs::Marker &marker)
 {
-
   switch (color)
   {
   case COLORS::ColorState::RED:
@@ -124,7 +122,10 @@ void Cup::setColor(COLORS::ColorState color, visualization_msgs::Marker &marker)
 
 bool Cup::isOpbjectInGripper(tf::StampedTransform& object)
 {
-  return (object.getOrigin().y() > CUP_SIZE * -1 && object.getOrigin().y() < CUP_SIZE)
-          && (object.getOrigin().x() > CUP_SIZE * -1 && object.getOrigin().x() < CUP_SIZE)
-          && (object.getOrigin().z() > (CUP_SIZE*2) * -1 && object.getOrigin().z() < (CUP_SIZE*2));
+  const float widthMargin = CUP_SIZE - GRIPPER_DEPTH;
+  const float heightMargin = (CUP_SIZE*2) - GRIPPER_DEPTH;
+
+  return (object.getOrigin().y() > widthMargin * -1 && object.getOrigin().y() < widthMargin)
+          && (object.getOrigin().x() > widthMargin * -1 && object.getOrigin().x() < widthMargin)
+          && (object.getOrigin().z() > heightMargin * -1 && object.getOrigin().z() < heightMargin);
 }
