@@ -101,10 +101,15 @@ void RobotarmController::handleCommand(std::string aCommand)
   // Get the time
   mMoveTime = atoi(lSubstring.substr(lSubstring.find("T") + 1).c_str());
   // Convert to angles
-  for (int i = 0; i < mGoalPositions.size(); i++)
+  for (int i = 0; i < (mGoalPositions.size() - 1); i++)
   {
     mGoalPositions.at(i) = mapValues(mGoalPositions.at(i), MINPULSEWIDTH, MAXPULSEWIDTH, MINSIMULATEDDEGREES, MAXSIMULATEDDEGREES);
   }
+  // Convert to gripper
+  mGoalPositions.at(5) = mGoalPositions.at(5) / 500;
+  std::cout << "Before :" << mGoalPositions.at(5) << std::endl;
+  mGoalPositions.at(5) = mapValues(mGoalPositions.at(5), 1, 4, MINGRIPPERDEGREES, MAXGRIPPERDEGREES);
+  std::cout << "After :" << mGoalPositions.at(5) << std::endl;
   // Calculate differences per millisecond from current position
   for (int i = 0; i < mJointPositions.size(); i++)
   {
