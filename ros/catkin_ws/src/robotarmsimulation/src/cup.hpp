@@ -6,16 +6,30 @@
 #include <cstdio>
 #include <ros/ros.h>
 
-
-//
-// #include <tf/transform_broadcaster.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <geometry_msgs/Twist.h>
 #include <visualization_msgs/Marker.h>
-//
+
+
+#define CUP_SIZE 0.04
+#define CUP_POS_X 0.4
+#define CUP_POS_Y 0
+#define CUP_POS_Z 0
+
+
+
+namespace COLORS
+{
+enum ColorState
+{
+  RED,
+  GREEN
+};
+
+};
 
 class Cup
 {
@@ -28,6 +42,8 @@ public:
 private:
   std::string topic;
   void publishCup();
+
+  void setColor(COLORS::ColorState color, visualization_msgs::Marker& marker);
 
 
   ros::NodeHandle n;

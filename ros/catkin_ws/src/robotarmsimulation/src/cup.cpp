@@ -28,9 +28,9 @@ void Cup::publishCup()
   static_transformStamped.header.stamp = ros::Time::now();
   static_transformStamped.header.frame_id = "base_link";
   static_transformStamped.child_frame_id = "cup";
-  static_transformStamped.transform.translation.x = 1;
-  static_transformStamped.transform.translation.y = 1;
-  static_transformStamped.transform.translation.z = 0;
+  static_transformStamped.transform.translation.x = CUP_POS_X;
+  static_transformStamped.transform.translation.y = CUP_POS_Y;
+  static_transformStamped.transform.translation.z = CUP_POS_Z;
   tf2::Quaternion quat;
 
   quat.setRPY(0, 0, 0);
@@ -54,20 +54,17 @@ void Cup::showCup()
 
   marker.pose.position.x = 0;
   marker.pose.position.y = 0;
-  marker.pose.position.z = 0.05;
+  marker.pose.position.z = CUP_SIZE;
   marker.pose.orientation.x = 0.0;
   marker.pose.orientation.y = 0.0;
   marker.pose.orientation.z = 0.0;
   marker.pose.orientation.w = 1.0;
-  marker.scale.x = 0.05;
-  marker.scale.y = 0.05;
-  marker.scale.z = 0.10;
+  marker.scale.x = CUP_SIZE;
+  marker.scale.y = CUP_SIZE;
+  marker.scale.z = CUP_SIZE * 2;
   marker.lifetime = ros::Duration();
 
-  marker.color.r = 1.0f;
-  marker.color.g = 0.0f;
-  marker.color.b = 0.0f;
-  marker.color.a = 1.0;
+  setColor(COLORS::GREEN, marker);
 
   marker_pub.publish(marker);
 }
@@ -87,6 +84,7 @@ void Cup::handleCollision()
       echoListener.lookupTransform("/cup", "/gripper_left", ros::Time(0), leftGripperTransform);
       std::cout << "X" << leftGripperTransform.getOrigin().x() << std::endl;
       std::cout << "Y" << leftGripperTransform.getOrigin().y() << std::endl;
+      std::cout << "Z" << leftGripperTransform.getOrigin().z() << std::endl;
     }
     catch (tf::TransformException ex)
     {
@@ -94,5 +92,26 @@ void Cup::handleCollision()
       ros::Duration(1.0).sleep();
     }
     rate.sleep();
+  }
+}
+
+void Cup::setColor(COLORS::ColorState color, visualization_msgs::Marker &marker)
+{
+
+  switch (color)
+  {
+  case COLORS::ColorState::RED:
+    marker.color.r = 1.0f;
+    marker.color.g = 0.0f;
+    marker.color.b = 0.0f;
+    marker.color.a = 1.0;
+    break;
+
+  case COLORS::ColorState::GREEN:
+    marker.color.r = 0.0f;
+    marker.color.g = 1.0f;
+    marker.color.b = 0.0f;
+    marker.color.a = 1.0;
+    break;
   }
 }
