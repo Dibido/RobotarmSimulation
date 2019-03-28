@@ -23,40 +23,22 @@ Cup::~Cup()
 
 void Cup::publishCup()
 {
-  // std::cout << "Publishing" << std::endl;
-  // tf::TransformBroadcaster static_broadcaster;
-  // static_name = "base_link";
-  // geometry_msgs::TransformStamped static_transformStamped;
-  // static_transformStamped.header.stamp = ros::Time::now();
-  // static_transformStamped.header.frame_id = "cup";
-  // static_transformStamped.child_frame_id = static_name;
-  // static_transformStamped.transform.translation.x = 1;
-  // static_transformStamped.transform.translation.y = 1;
-  // static_transformStamped.transform.translation.z = 0;
-  // tf::Quaternion quat;
-  // quat.setRPY(0, 0, 0);
-  // static_transformStamped.transform.rotation.x = quat.x();
-  // static_transformStamped.transform.rotation.y = quat.y();
-  // static_transformStamped.transform.rotation.z = quat.z();
-  // static_transformStamped.transform.rotation.w = quat.w();
-  // static_broadcaster.sendTransform(static_transformStamped);
+  static tf2_ros::StaticTransformBroadcaster static_broadcaster;
+  geometry_msgs::TransformStamped static_transformStamped;
+  static_transformStamped.header.stamp = ros::Time::now();
+  static_transformStamped.header.frame_id = "base_link";
+  static_transformStamped.child_frame_id = "cup";
+  static_transformStamped.transform.translation.x = 1;
+  static_transformStamped.transform.translation.y = 1;
+  static_transformStamped.transform.translation.z = 0;
+  tf2::Quaternion quat;
 
-    static tf2_ros::StaticTransformBroadcaster static_broadcaster;
-    geometry_msgs::TransformStamped static_transformStamped;
-    static_transformStamped.header.stamp = ros::Time::now();
-    static_transformStamped.header.frame_id = "base_link";
-    static_transformStamped.child_frame_id = "cup";
-    static_transformStamped.transform.translation.x = 1;
-    static_transformStamped.transform.translation.y = 1;
-    static_transformStamped.transform.translation.z = 0;
-    tf2::Quaternion quat;
-
-    quat.setRPY(0, 0, 0);
-    static_transformStamped.transform.rotation.x = quat.x();
-    static_transformStamped.transform.rotation.y = quat.y();
-    static_transformStamped.transform.rotation.z = quat.z();
-    static_transformStamped.transform.rotation.w = quat.w();
-    static_broadcaster.sendTransform(static_transformStamped);
+  quat.setRPY(0, 0, 0);
+  static_transformStamped.transform.rotation.x = quat.x();
+  static_transformStamped.transform.rotation.y = quat.y();
+  static_transformStamped.transform.rotation.z = quat.z();
+  static_transformStamped.transform.rotation.w = quat.w();
+  static_broadcaster.sendTransform(static_transformStamped);
 }
 
 void Cup::showCup()
@@ -92,48 +74,25 @@ void Cup::showCup()
 
 void Cup::handleCollision()
 {
-  // tf::TransformListener listener;
-
-  // // ros::Rate rate(10.0);
-  // // while (n.ok()){
-  //   tf::StampedTransform transform;
-  //   try
-  //   {
-  //     listener.lookupTransform("/cup", "/gripper_left", ros::Time(0), transform);
-  //   }
-  //   catch (tf::TransformException ex)
-  //   {
-  //     ROS_ERROR("%s",ex.what());
-  //     ros::Duration(1.0).sleep();
-  //   }
 
   ros::Rate rate(10.0);
-  while (n.ok()){
+  while (n.ok())
+  {
     showCup();
 
-    
-
     tf::StampedTransform leftGripperTransform;
-    
-    try{
+
+    try
+    {
       echoListener.lookupTransform("/cup", "/gripper_left", ros::Time(0), leftGripperTransform);
       std::cout << "X" << leftGripperTransform.getOrigin().x() << std::endl;
       std::cout << "Y" << leftGripperTransform.getOrigin().y() << std::endl;
     }
-    catch (tf::TransformException ex){
-      ROS_ERROR("%s",ex.what());
+    catch (tf::TransformException ex)
+    {
+      ROS_ERROR("%s", ex.what());
       ros::Duration(1.0).sleep();
     }
-
-    
-
-
-  //   // turtlesim::Velocity vel_msg;
-  //   // vel_msg.angular = 4.0 * atan2(transform.getOrigin().y(),
-  //   //                             transform.getOrigin().x());
-  //   // vel_msg.linear = 0.5 * sqrt(pow(transform.getOrigin().x(), 2) +
-  //   //                             pow(transform.getOrigin().y(), 2));
-
     rate.sleep();
-   }
+  }
 }
