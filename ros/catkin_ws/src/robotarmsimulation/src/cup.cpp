@@ -95,11 +95,12 @@ void Cup::handleCollision()
       {
         cupPosY = (newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2;
         cupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
-        cupPosZ = (newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2;
 
-        cupPosZ -= gripperOffset.z() - 0.05; //TODO remove the 0.05
-
+        auto newPosCupZ = ((newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2) - gripperOffset.z() + 0.01;
         
+        if (newPosCupZ > 0)
+          cupPosZ = newPosCupZ;
+
         color = COLORS::GREEN;
       }
       else
@@ -110,7 +111,7 @@ void Cup::handleCollision()
         // while(cup.getOrigin().z() != 0)
         // {
         auto timePast = ros::Time::now() - timeFrameTime;
-        float dropMulitplayer =  timePast.toSec() / calculateFallingTime(cup);
+        float dropMulitplayer = timePast.toSec() / calculateFallingTime(cup);
         cupPosZ -= cup.getOrigin().z() * dropMulitplayer;
         //}
       }
