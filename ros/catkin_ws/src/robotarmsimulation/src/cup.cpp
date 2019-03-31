@@ -101,8 +101,6 @@ void Cup::handleCollision()
         cupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
         cupPosZ = (newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2;
         
-        cupPosY -= gripperOffset.y();
-        cupPosX -= gripperOffset.x();
         cupPosZ -= gripperOffset.z()+0.05; //TODO remove the 0.05
 
         publishCup();
