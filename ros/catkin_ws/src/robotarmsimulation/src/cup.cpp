@@ -12,6 +12,7 @@ int main(int argc, char **argv)
 
 Cup::Cup(std::string aTopic)
 {
+  timeFrameTime = ros::Time::now();
   marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
   publishCup();
 }
@@ -42,7 +43,6 @@ void Cup::publishCup()
 
 void Cup::showCup(COLORS::ColorState color)
 {
-  // std::cout << "Showing" << std::endl;
   visualization_msgs::Marker marker;
   marker.header.frame_id = "cup";
   marker.header.stamp = ros::Time::now();
@@ -70,45 +70,52 @@ void Cup::showCup(COLORS::ColorState color)
 
 void Cup::handleCollision()
 {
-
-  //Force of gravity 9.8m/s^2
-
-  COLORS::ColorState color = COLORS::RED;
-
   tf::Vector3 gripperOffset;
   ros::Rate rate(10.0);
   while (n.ok())
   {
-
     tf::StampedTransform leftGripper;
     tf::StampedTransform rightGripper;
     tf::StampedTransform newPosLeft;
     tf::StampedTransform newPosRight;
+    tf::StampedTransform cup;
 
     try
     {
+      listener.lookupTransform("/base_link", "/cup", ros::Time(0), cup);
       listener.lookupTransform("/cup", "/gripper_left", ros::Time(0), leftGripper);
       listener.lookupTransform("/cup", "/gripper_right", ros::Time(0), rightGripper);
       listener.lookupTransform("/base_link", "/gripper_left", ros::Time(0), newPosLeft);
       listener.lookupTransform("/base_link", "/gripper_right", ros::Time(0), newPosRight);
 
+      std::cout << calculateFallingTime(cup) << std::endl;
+      std::cout << "Time " << ros::Time::now() - timeFrameTime << std::endl;
 
-      if (isOpbjectInGripper(leftGripper) && isOpbjectInGripper(rightGripper) )
+      if (isOpbjectInGripper(leftGripper) && isOpbjectInGripper(rightGripper))
       {
         cupPosY = (newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2;
         cupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
         cupPosZ = (newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2;
-        
-        cupPosZ -= gripperOffset.z()+0.05; //TODO remove the 0.05
 
-        publishCup();
+        cupPosZ -= gripperOffset.z() - 0.05; //TODO remove the 0.05
+
+        
         color = COLORS::GREEN;
       }
       else
       {
         gripperOffset = leftGripper.getOrigin();
         color = COLORS::RED;
+
+        // while(cup.getOrigin().z() != 0)
+        // {
+        auto timePast = ros::Time::now() - timeFrameTime;
+        float dropMulitplayer =  timePast.toSec() / calculateFallingTime(cup);
+        cupPosZ -= cup.getOrigin().z() * dropMulitplayer;
+        //}
       }
+
+      publishCup();
     }
     catch (tf::TransformException ex)
     {
@@ -117,6 +124,7 @@ void Cup::handleCollision()
     }
 
     showCup(color);
+    timeFrameTime = ros::Time::now();
     rate.sleep();
   }
 }
@@ -141,12 +149,18 @@ void Cup::setColor(COLORS::ColorState color, visualization_msgs::Marker &marker)
   }
 }
 
-bool Cup::isOpbjectInGripper(tf::StampedTransform& object)
+bool Cup::isOpbjectInGripper(tf::StampedTransform &object)
 {
   const float widthMargin = CUP_SIZE - GRIPPER_DEPTH;
-  const float heightMargin = (CUP_SIZE*2) - GRIPPER_DEPTH;
+  const float heightMargin = (CUP_SIZE * 2) - GRIPPER_DEPTH;
 
-  return (object.getOrigin().y() > widthMargin * -1 && object.getOrigin().y() < widthMargin)
-          && (object.getOrigin().x() > widthMargin * -1 && object.getOrigin().x() < widthMargin)
-          && (object.getOrigin().z() > heightMargin * -1 && object.getOrigin().z() < heightMargin);
+  return (object.getOrigin().y() > widthMargin * -1 && object.getOrigin().y() < widthMargin) && (object.getOrigin().x() > widthMargin * -1 && object.getOrigin().x() < widthMargin) && (object.getOrigin().z() > heightMargin * -1 && object.getOrigin().z() < heightMargin);
+}
+
+float Cup::calculateFallingTime(tf::StampedTransform &object)
+{
+  const float FORCE_OF_GRAVITY = 9.5;
+
+  float value = 2 * object.getOrigin().z() / FORCE_OF_GRAVITY;
+  return sqrt(value);
 }

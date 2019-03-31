@@ -41,10 +41,14 @@ private:
 
   void setColor(COLORS::ColorState color, visualization_msgs::Marker& marker);
   bool isOpbjectInGripper(tf::StampedTransform& object);
+  float calculateFallingTime(tf::StampedTransform& object);
+
 
   float cupPosY = 0;
   float cupPosX = 0.4;
-  float cupPosZ = CUP_SIZE / 2;
+  float cupPosZ = 0;
+  COLORS::ColorState color = COLORS::RED;
+  ros::Time timeFrameTime;
 
   ros::NodeHandle n;
   ros::Publisher marker_pub;
