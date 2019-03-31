@@ -70,6 +70,9 @@ void Cup::showCup(COLORS::ColorState color)
 
 void Cup::handleCollision()
 {
+
+  //Force of gravity 9.8m/s^2
+
   COLORS::ColorState color = COLORS::RED;
 
   tf::Vector3 gripperOffset;
@@ -89,14 +92,9 @@ void Cup::handleCollision()
       listener.lookupTransform("/base_link", "/gripper_left", ros::Time(0), newPosLeft);
       listener.lookupTransform("/base_link", "/gripper_right", ros::Time(0), newPosRight);
 
-      // std::cout << "X " << newPos.getOrigin().x() <<std::endl;
-      // std::cout << "Y " << newPos.getOrigin().y() <<std::endl;
-
 
       if (isOpbjectInGripper(leftGripper) && isOpbjectInGripper(rightGripper) )
       {
-        std::cout << "Z " << newPosLeft.getOrigin().x() <<std::endl;
-
         cupPosY = (newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2;
         cupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
         cupPosZ = (newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2;
@@ -109,7 +107,6 @@ void Cup::handleCollision()
       else
       {
         gripperOffset = leftGripper.getOrigin();
-        std::cout << gripperOffset.z() << std::endl;
         color = COLORS::RED;
       }
     }
@@ -148,8 +145,6 @@ bool Cup::isOpbjectInGripper(tf::StampedTransform& object)
 {
   const float widthMargin = CUP_SIZE - GRIPPER_DEPTH;
   const float heightMargin = (CUP_SIZE*2) - GRIPPER_DEPTH;
-
-  std::cout << "test " << object.getOrigin().z() <<std::endl;
 
   return (object.getOrigin().y() > widthMargin * -1 && object.getOrigin().y() < widthMargin)
           && (object.getOrigin().x() > widthMargin * -1 && object.getOrigin().x() < widthMargin)
