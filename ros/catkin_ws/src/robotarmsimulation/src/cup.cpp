@@ -72,6 +72,7 @@ void Cup::handleCollision()
 {
   COLORS::ColorState color = COLORS::RED;
 
+  tf::Vector3 gripperOffset;
   ros::Rate rate(10.0);
   while (n.ok())
   {
@@ -99,12 +100,20 @@ void Cup::handleCollision()
         cupPosY = (newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2;
         cupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
         cupPosZ = (newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2;
+        
+        cupPosY -= gripperOffset.y();
+        cupPosX -= gripperOffset.x();
+        cupPosZ -= gripperOffset.z()+0.05; //TODO remove the 0.05
 
         publishCup();
         color = COLORS::GREEN;
       }
       else
+      {
+        gripperOffset = leftGripper.getOrigin();
+        std::cout << gripperOffset.z() << std::endl;
         color = COLORS::RED;
+      }
     }
     catch (tf::TransformException ex)
     {
@@ -141,6 +150,8 @@ bool Cup::isOpbjectInGripper(tf::StampedTransform& object)
 {
   const float widthMargin = CUP_SIZE - GRIPPER_DEPTH;
   const float heightMargin = (CUP_SIZE*2) - GRIPPER_DEPTH;
+
+  std::cout << "test " << object.getOrigin().z() <<std::endl;
 
   return (object.getOrigin().y() > widthMargin * -1 && object.getOrigin().y() < widthMargin)
           && (object.getOrigin().x() > widthMargin * -1 && object.getOrigin().x() < widthMargin)
