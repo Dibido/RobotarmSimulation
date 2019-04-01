@@ -23,7 +23,10 @@ class RobotarmController
   public:
     RobotarmController();
     ~RobotarmController();
-
+    
+    /**
+     * @brief Updates the current mJointPositions based on the velocities
+     */
     void updateRobotArmPosition();
 
   private:
@@ -33,7 +36,13 @@ class RobotarmController
 
     bool mReachedPosition;
 
+    /**
+     * @brief Initialize the communication
+     */
     void initializeCommunication();
+    /**
+     * @brief Initialize the necessary values
+     */
     void initializeValues();
 
     // Robotarm position variables
@@ -48,8 +57,15 @@ class RobotarmController
     std::chrono::high_resolution_clock::time_point mPreviousMoveTime;
     std::chrono::high_resolution_clock::time_point mMoveStartTime;
 
+    /**
+     * @brief Sends the current state of mJointStates to the visualizer
+     */
     void sendCurrentStateToVisualizer();
 
+    /**
+     * @brief Handle the command from the client
+     * @param aCommand - The command to parse and handle
+     */
     void handleCommand(std::string aCommand);
 
     void robotarmCommandCallback(const std_msgs::String::ConstPtr& aRobotarmCommand);
