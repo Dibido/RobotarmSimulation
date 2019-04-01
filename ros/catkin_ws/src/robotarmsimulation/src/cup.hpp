@@ -30,7 +30,7 @@ enum ColorState
 class Cup
 {
 public:
-  Cup(std::string aTopic);
+  Cup(std::string aTopic, float aOriginalX = 0.4, float aOriginalY = 0.0, float aOriginalZ = 0.0);
   ~Cup();
   void showCup(COLORS::ColorState color);
   void handleCollision();
@@ -44,9 +44,9 @@ private:
   float calculateFallingTime(tf::StampedTransform& object);
 
 
-  float cupPosY = 0;
-  float cupPosX = 0.4;
-  float cupPosZ = 0;
+  float cupPosY;
+  float cupPosX;
+  float cupPosZ;
   COLORS::ColorState color = COLORS::RED;
   ros::Time timeFrameTime;
 

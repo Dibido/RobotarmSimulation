@@ -1,11 +1,12 @@
 <launch>
-  <arg name="gui" default="false" />
+  <arg name="gui" default="false" /> -->
   <param name="robot_description" textfile="$(find robotarmsimulation)/lynxmotion_arm.urdf" />
-  <param name="use_gui" value="$(arg gui)"/>
+  <!-- <param name="use_gui" value="$(arg gui)"/> -->
   <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
- <node name="cup" pkg="robotarmsimulation" type="cup"/> 
- <node name="controller" pkg="robotarmsimulation" type="robotarmController"/> 
- <node name="client" pkg="robotarmsimulation" type="robotarmClient"/> 
-<node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotarmsimulation)/lynxmotion.rviz" required="true" />
+  <node name="cup" pkg="robotarmsimulation" type="cup" args="0.4 0.0 0.0"/>
+  <!-- <node name="cup2" pkg="robotarmsimulation" type="cup" args="0 0.8 0"/> -->
+  <node name="controller" pkg="robotarmsimulation" type="robotarmController"/> 
+  <node name="client" pkg="robotarmsimulation" type="robotarmClient"/> 
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotarmsimulation)/lynxmotion.rviz" required="true" /> -->
 </launch>
