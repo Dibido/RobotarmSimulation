@@ -12,11 +12,6 @@ int main(int argc, char** argv)
   {
     sleep(1);
     std_msgs::String msg;
-    // msg.data = "#0P2000#1P1700#2P900#3P1100#4P1500#5P1500T3000\n";
-    // ROS_INFO("sending command : %s", msg.data.c_str());
-    // lRobotarmCommandPublisher.publish(msg);
-    // ros::spinOnce();
-    // sleep(5);
     msg.data = "#0P1500#1P1500#2P1500#3P1500#4P1500#5P1500T2000\n";
     ROS_INFO("sending command : %s", msg.data.c_str());
     lRobotarmCommandPublisher.publish(msg);
