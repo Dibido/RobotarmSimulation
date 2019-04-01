@@ -5,7 +5,6 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "robotarmController");
   RobotarmController lRobotarmController;
 
-
   while (ros::ok())
   {
     ros::spinOnce();
