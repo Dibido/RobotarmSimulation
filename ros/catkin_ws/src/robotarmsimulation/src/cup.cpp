@@ -3,18 +3,31 @@
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "cup");
+<<<<<<< HEAD
 
   Cup c("cup");
+=======
+  float argX, argY, argZ;
+  argX = atof(argv[1]);
+  argY = atof(argv[2]);
+  argZ = atof(argv[3]);
+  Cup c("test", argX, argY, argZ);
+>>>>>>> 268c621367888f83b285cc43a8a6197481636f43
   c.handleCollision();
 
   return 0;
 }
 
+<<<<<<< HEAD
 Cup::Cup(std::string aTopic) : topic(aTopic)
+=======
+Cup::Cup(std::string aTopica, float aOriginalX, float aOriginalY , float aOriginalZ ) : cupPosX(aOriginalX), cupPosY(aOriginalY), cupPosZ(aOriginalZ)
+>>>>>>> 268c621367888f83b285cc43a8a6197481636f43
 {
   timeFrameTime = ros::Time::now();
   marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
   publishCup();
+  
 }
 
 Cup::~Cup()
