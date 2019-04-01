@@ -4,22 +4,34 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "cup");
 
-  float argX, argY, argZ;
-  argX = atof(argv[1]);
-  argY = atof(argv[2]);
-  argZ = atof(argv[3]);
-  Cup c("cup", argX, argY, argZ);
-  c.handleCollision();
+
+  if (argc > 1)
+  {
+    float argX, argY, argZ;
+    argX = atof(argv[1]);
+    argY = atof(argv[2]);
+    argZ = atof(argv[3]);
+    Cup c("cup", argX, argY, argZ);
+    c.handleCollision();
+
+  }
+  else
+  {
+    Cup c("cup");
+    c.handleCollision();
+  }
+  
+
+  
 
   return 0;
 }
 
-Cup::Cup(std::string aTopica, float aOriginalX, float aOriginalY , float aOriginalZ ) : cupPosX(aOriginalX), cupPosY(aOriginalY), cupPosZ(aOriginalZ)
+Cup::Cup(std::string aTopic, float aOriginalX, float aOriginalY, float aOriginalZ) : cupPosX(aOriginalX), cupPosY(aOriginalY), cupPosZ(aOriginalZ), topic(aTopic)
 {
   timeFrameTime = ros::Time::now();
   marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
   publishCup();
-  
 }
 
 Cup::~Cup()
@@ -78,7 +90,7 @@ void Cup::showMarker(COLORS::ColorState color, std::string frameName)
   visualization_msgs::Marker marker;
   marker.header.frame_id = frameName;
   marker.header.stamp = ros::Time::now();
-  marker.ns = "marker_"+frameName;
+  marker.ns = "marker_" + frameName;
   marker.id = 0;
   marker.type = visualization_msgs::Marker::SPHERE;
   marker.action = visualization_msgs::Marker::ADD;
@@ -112,8 +124,6 @@ void Cup::handleCollision()
     tf::StampedTransform newPosRight;
     tf::StampedTransform cup;
 
-
-
     try
     {
       std::string topicFrame = std::string("/") + topic;
@@ -129,7 +139,7 @@ void Cup::handleCollision()
         cupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
 
         auto newPosCupZ = ((newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2) - gripperOffset.z() + 0.01;
-        
+
         if (newPosCupZ > 0)
           cupPosZ = newPosCupZ;
 
@@ -154,8 +164,8 @@ void Cup::handleCollision()
     }
 
     showCup(color);
-    showMarker(COLORS::RED,"/gripper_right");
-    showMarker(COLORS::RED,"/gripper_left");
+    showMarker(COLORS::RED, "/gripper_right");
+    showMarker(COLORS::RED, "/gripper_left");
     timeFrameTime = ros::Time::now();
     rate.sleep();
   }
