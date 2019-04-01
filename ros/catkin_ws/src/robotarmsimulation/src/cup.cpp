@@ -4,7 +4,6 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "cup");
 
-
   if (argc > 1)
   {
     float argX, argY, argZ;
@@ -13,16 +12,12 @@ int main(int argc, char **argv)
     argZ = atof(argv[3]);
     Cup c("cup", argX, argY, argZ);
     c.handleCollision();
-
   }
   else
   {
     Cup c("cup");
     c.handleCollision();
   }
-  
-
-  
 
   return 0;
 }
@@ -31,6 +26,7 @@ Cup::Cup(std::string aTopic, float aOriginalX, float aOriginalY, float aOriginal
 {
   timeFrameTime = ros::Time::now();
   marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
+
   publishCup();
 }
 
@@ -83,6 +79,7 @@ void Cup::showCup(COLORS::ColorState color)
   setColor(color, marker);
 
   marker_pub.publish(marker);
+  ros::spinOnce();
 }
 
 void Cup::showMarker(COLORS::ColorState color, std::string frameName)
@@ -102,22 +99,27 @@ void Cup::showMarker(COLORS::ColorState color, std::string frameName)
   marker.pose.orientation.y = 0;
   marker.pose.orientation.z = 0;
   marker.pose.orientation.w = 1.0;
-  marker.scale.x = 0.03;
-  marker.scale.y = 0.03;
-  marker.scale.z = 0.03;
+  marker.scale.x = 0.025;
+  marker.scale.y = 0.025;
+  marker.scale.z = 0.025;
   marker.lifetime = ros::Duration();
 
   setColor(color, marker);
 
   marker_pub.publish(marker);
+  ros::spinOnce();
 }
 
 void Cup::handleCollision()
 {
   tf::Vector3 gripperOffset;
-  ros::Rate rate(10.0);
+  ros::Rate rate(300.0);
   while (n.ok())
   {
+    showMarker(COLORS::RED, "/gripper_right");
+    showMarker(COLORS::RED, "/gripper_left");
+    
+
     tf::StampedTransform leftGripper;
     tf::StampedTransform rightGripper;
     tf::StampedTransform newPosLeft;
@@ -138,7 +140,7 @@ void Cup::handleCollision()
         cupPosY = (newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2;
         cupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
 
-        auto newPosCupZ = ((newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2) - gripperOffset.z() + 0.01;
+        auto newPosCupZ = ((newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2) - gripperOffset.z() + 0.005;
 
         if (newPosCupZ > 0)
           cupPosZ = newPosCupZ;
@@ -150,9 +152,12 @@ void Cup::handleCollision()
         gripperOffset = leftGripper.getOrigin();
         color = COLORS::RED;
 
-        auto timePast = ros::Time::now() - timeFrameTime;
-        float dropMulitplayer = timePast.toSec() / calculateFallingTime(cup);
-        cupPosZ -= cup.getOrigin().z() * dropMulitplayer;
+        if (cup.getOrigin().z() > 0)
+        {
+          auto timePast = ros::Time::now() - timeFrameTime;
+          float dropMulitplayer = timePast.toSec() / calculateFallingTime(cup);
+          cupPosZ -= cup.getOrigin().z() * dropMulitplayer;
+        }
       }
 
       publishCup();
@@ -163,9 +168,10 @@ void Cup::handleCollision()
       ros::Duration(1.0).sleep();
     }
 
+    
+
     showCup(color);
-    showMarker(COLORS::RED, "/gripper_right");
-    showMarker(COLORS::RED, "/gripper_left");
+
     timeFrameTime = ros::Time::now();
     rate.sleep();
   }
