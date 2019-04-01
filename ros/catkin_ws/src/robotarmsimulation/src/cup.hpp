@@ -17,6 +17,12 @@
 #define CUP_SIZE 0.04
 #define GRIPPER_DEPTH 0.01
 
+//Frames
+#define FRAME_NAME_GRIPPER_LEFT "/gripper_left"
+#define FRAME_NAME_GRIPPER_RIGHT "/gripper_right"
+#define WORLD_OBJECT "/base_link"
+
+
 namespace COLORS
 {
 enum ColorState
@@ -32,7 +38,6 @@ class Cup
 public:
   Cup(std::string aTopic);
   ~Cup();
-  void showCup(COLORS::ColorState color);
   void handleCollision();
 
 private:
@@ -43,6 +48,8 @@ private:
   bool isOpbjectInGripper(tf::StampedTransform& object);
   float calculateFallingTime(tf::StampedTransform& object);
 
+  void showCup(COLORS::ColorState color);
+  void showMarker(COLORS::ColorState color,std::string frameName);
 
   float cupPosY = 0;
   float cupPosX = 0.4;
