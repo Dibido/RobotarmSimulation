@@ -4,13 +4,14 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "cup");
 
-  if (argc > 1)
+  if (argc >= 5)
   {
     float argX, argY, argZ;
     argX = atof(argv[1]);
     argY = atof(argv[2]);
     argZ = atof(argv[3]);
-    Cup c("cup", argX, argY, argZ);
+    std::string argName = std::string(argv[4]);
+    Cup c(argName, argX, argY, argZ);
     c.handleCollision();
   }
   else
@@ -59,7 +60,7 @@ void Cup::showCup(COLORS::ColorState color)
   visualization_msgs::Marker marker;
   marker.header.frame_id = topic;
   marker.header.stamp = ros::Time::now();
-  marker.ns = "cupObject";
+  marker.ns = "cupObject_" + topic;
   marker.id = 0;
   marker.type = visualization_msgs::Marker::CYLINDER;
   marker.action = visualization_msgs::Marker::ADD;
