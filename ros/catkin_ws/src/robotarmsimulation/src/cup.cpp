@@ -35,7 +35,7 @@ Cup::~Cup()
 {
 }
 
-void Cup::publishCup()
+void Cup::publishCup() const
 {
   static tf2_ros::StaticTransformBroadcaster static_broadcaster;
   geometry_msgs::TransformStamped static_transformStamped;
@@ -55,7 +55,7 @@ void Cup::publishCup()
   static_broadcaster.sendTransform(static_transformStamped);
 }
 
-void Cup::showCup(COLORS::ColorState color)
+void Cup::showCup(const COLORS::ColorState color) const
 {
   visualization_msgs::Marker marker;
   marker.header.frame_id = topic;
@@ -83,7 +83,7 @@ void Cup::showCup(COLORS::ColorState color)
   ros::spinOnce();
 }
 
-void Cup::showMarker(COLORS::ColorState color, std::string frameName)
+void Cup::showMarker(const COLORS::ColorState color,const std::string &frameName,const float offset) const
 {
   visualization_msgs::Marker marker;
   marker.header.frame_id = frameName;
@@ -94,15 +94,15 @@ void Cup::showMarker(COLORS::ColorState color, std::string frameName)
   marker.action = visualization_msgs::Marker::ADD;
 
   marker.pose.position.x = 0;
-  marker.pose.position.y = 0;
-  marker.pose.position.z = 0;
+  marker.pose.position.y = offset;
+  marker.pose.position.z = GRIPPER_DEPTH;
   marker.pose.orientation.x = 0;
   marker.pose.orientation.y = 0;
   marker.pose.orientation.z = 0;
   marker.pose.orientation.w = 1.0;
-  marker.scale.x = 0.025;
-  marker.scale.y = 0.025;
-  marker.scale.z = 0.025;
+  marker.scale.x = 0.005;
+  marker.scale.y = 0.005;
+  marker.scale.z = 0.005;
   marker.lifetime = ros::Duration();
 
   setColor(color, marker);
@@ -117,10 +117,10 @@ void Cup::handleCollision()
   ros::Rate rate(300.0);
   while (n.ok())
   {
-    showMarker(COLORS::RED, "/gripper_right");
-    showMarker(COLORS::RED, "/gripper_left");
+    //Mark the grippers
+    showMarker(COLORS::RED, FRAME_NAME_GRIPPER_RIGHT, GRIPPER_DEPTH);
+    showMarker(COLORS::RED, FRAME_NAME_GRIPPER_LEFT, GRIPPER_DEPTH * -1);
     
-
     tf::StampedTransform leftGripper;
     tf::StampedTransform rightGripper;
     tf::StampedTransform newPosLeft;
@@ -178,7 +178,7 @@ void Cup::handleCollision()
   }
 }
 
-void Cup::setColor(COLORS::ColorState color, visualization_msgs::Marker &marker)
+void Cup::setColor(const COLORS::ColorState color, visualization_msgs::Marker &marker) const
 {
   switch (color)
   {
@@ -198,7 +198,7 @@ void Cup::setColor(COLORS::ColorState color, visualization_msgs::Marker &marker)
   }
 }
 
-bool Cup::isOpbjectInGripper(tf::StampedTransform &object)
+bool Cup::isOpbjectInGripper(const tf::StampedTransform &object) const
 {
   const float widthMargin = CUP_SIZE - GRIPPER_DEPTH;
   const float heightMargin = (CUP_SIZE * 2) - GRIPPER_DEPTH;
@@ -206,7 +206,7 @@ bool Cup::isOpbjectInGripper(tf::StampedTransform &object)
   return (object.getOrigin().y() > widthMargin * -1 && object.getOrigin().y() < widthMargin) && (object.getOrigin().x() > widthMargin * -1 && object.getOrigin().x() < widthMargin) && (object.getOrigin().z() > heightMargin * -1 && object.getOrigin().z() < heightMargin);
 }
 
-float Cup::calculateFallingTime(tf::StampedTransform &object)
+float Cup::calculateFallingTime(const tf::StampedTransform &object) const
 {
   const float FORCE_OF_GRAVITY = 9.5;
 

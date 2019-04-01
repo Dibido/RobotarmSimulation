@@ -36,20 +36,53 @@ enum ColorState
 class Cup
 {
 public:
+  /**
+   * @brief Construct a new Cup object
+   * 
+   * @param aTopic - The name of the topic this object will publish itself
+   * @param aOriginalX - X location of the start position
+   * @param aOriginalY - Y location of the start position
+   * @param aOriginalZ - Z location of the start position
+   */
   Cup(std::string aTopic, float aOriginalX = 0.4, float aOriginalY = 0.0, float aOriginalZ = 0.0);
   ~Cup();
+
+  /**
+   * @brief This function will detect collision and act appropriately
+   * 
+   */
   void handleCollision();
 
 private:
+  /**
+   * @brief This function will create a frame where the cup object can be shown
+   * 
+   */
+  void publishCup() const;
+
+  /**
+   * @brief 
+   * 
+   * @param color 
+   */
+  void showCup(const COLORS::ColorState color) const;
+
+  /**
+   * @brief This function will draw a sphere
+   * 
+   * @param color - The color u want ur sphere to be
+   * @param frameName - The frame name u would like the sphere to be drawn
+   */
+  void showMarker(const COLORS::ColorState color,const std::string &frameName,const float offset) const;
+
+
+  void setColor(const COLORS::ColorState color, visualization_msgs::Marker& marker) const;
+  bool isOpbjectInGripper(const tf::StampedTransform& object) const;
+  float calculateFallingTime(const tf::StampedTransform& object) const;
+
+
   std::string topic;
-  void publishCup();
 
-  void setColor(COLORS::ColorState color, visualization_msgs::Marker& marker);
-  bool isOpbjectInGripper(tf::StampedTransform& object);
-  float calculateFallingTime(tf::StampedTransform& object);
-
-  void showCup(COLORS::ColorState color);
-  void showMarker(COLORS::ColorState color,std::string frameName);
 
   float cupPosY;
   float cupPosX;
