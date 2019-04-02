@@ -108,6 +108,7 @@ class RobotarmController
      * @param aOutMax - The maximum value of the output range 
      * @return unsigned int - The converted value
      */
+    public:
     double mapValues(double aDegree, double aInMin, double aInMax, double aOutMin, double aOutMax) const;
 };
 
