@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 
 Cup::Cup(std::string aTopic, float aOriginalX, float aOriginalY, float aOriginalZ) : cupPosX(aOriginalX), cupPosY(aOriginalY), cupPosZ(aOriginalZ), topic(aTopic)
 {
-  timeFrameTime = ros::Time::now();
+  pastFrameTime = ros::Time::now();
   marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 
   publishCup();
@@ -155,7 +155,7 @@ void Cup::handleCollision()
 
         if (cup.getOrigin().z() > 0)
         {
-          auto timePast = ros::Time::now() - timeFrameTime;
+          auto timePast = ros::Time::now() - pastFrameTime;
           float dropMulitplayer = timePast.toSec() / calculateFallingTime(cup);
           cupPosZ -= cup.getOrigin().z() * dropMulitplayer;
         }
@@ -173,7 +173,7 @@ void Cup::handleCollision()
 
     showCup(color);
 
-    timeFrameTime = ros::Time::now();
+    pastFrameTime = ros::Time::now();
     rate.sleep();
   }
 }
