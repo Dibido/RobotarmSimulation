@@ -113,7 +113,9 @@ void Cup::showMarker(const COLORS::ColorState aColor,const std::string& aFrameNa
 
 void Cup::handleCollision()
 {
-  tf::Vector3 lGripperOffset;
+  tf::Vector3 leftGripperOffset;
+  tf::Vector3 rightGripperOffset;
+
   ros::Rate rate(300.0);
   while (n.ok())
   {
@@ -141,7 +143,7 @@ void Cup::handleCollision()
         mCupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
         mCupPosY = (newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2;
 
-        auto lNewCupPosZ = ((newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2) - lGripperOffset.z() + PICK_UP_OFFSET;
+        auto lNewCupPosZ = ((newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2) - rightGripperOffset.z() + PICK_UP_OFFSET;
 
         if (lNewCupPosZ > 0)
           mCupPosZ = lNewCupPosZ;
@@ -149,12 +151,22 @@ void Cup::handleCollision()
         mColor = COLORS::GREEN;
       }else if(isObjectInGripper(leftGripper) + isObjectInGripper(rightGripper) == PUSH_TO_SIDE_COUNT)
       {
-        mCupPosX = ((newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2) - lGripperOffset.x();
-        mCupPosY = ((newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2) - lGripperOffset.y();
+        if(isObjectInGripper(leftGripper))
+        {
+        mCupPosX = (newPosLeft.getOrigin().x() - leftGripperOffset.x());
+        mCupPosY = (newPosLeft.getOrigin().y() - leftGripperOffset.y());
+        }else
+        {
+        mCupPosX = (newPosRight.getOrigin().x() + rightGripperOffset.x());
+        mCupPosY = (newPosRight.getOrigin().y() + rightGripperOffset.y());
+        }
+        
       }
       else
       {
-        lGripperOffset = leftGripper.getOrigin();
+        leftGripperOffset = leftGripper.getOrigin();
+        rightGripperOffset = leftGripper.getOrigin();
+
         mColor = COLORS::RED;
 
         if (cup.getOrigin().z() > 0)
