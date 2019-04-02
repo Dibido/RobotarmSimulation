@@ -75,20 +75,56 @@ private:
    */
   void showMarker(const COLORS::ColorState color,const std::string &frameName,const float offset) const;
 
-
+  /**
+   * @brief Set the Color of the cup
+   * 
+   * @param color - The color u would like ur object to be
+   * @param marker - A reference of the object u want to color
+   */
   void setColor(const COLORS::ColorState color, visualization_msgs::Marker& marker) const;
+
+  /**
+   * @brief This function will check if the object is touching the gripper
+   * 
+   * @param object - The dictence from the cup relitive from the gripper
+   * @return true - Gripper is touching the object
+   * @return false - Gripper is not touching the object
+   */
   bool isOpbjectInGripper(const tf::StampedTransform& object) const;
+
+  /**
+   * @brief This function will calculate the falling speed of the object
+   * 
+   * @param object - The location of the object reletive to the world
+   * @return float - The falling time of the object in seconds before it hits the ground
+   */
   float calculateFallingTime(const tf::StampedTransform& object) const;
 
-
+  /**
+   * @brief Topic name of the object
+   * 
+   */
   std::string topic;
 
-
+  /**
+   * @brief The x,y and z positions of the cup
+   * 
+   */
   float cupPosY;
   float cupPosX;
   float cupPosZ;
+
+  /**
+   * @brief The set color ur cup wil be displayed
+   * 
+   */
   COLORS::ColorState color = COLORS::RED;
-  ros::Time timeFrameTime;
+
+  /**
+   * @brief The time when the last frame was displayed. This valiable is used to know how mutch time is passed between the current frame and the past frame
+   * 
+   */
+  ros::Time pastFrameTime;
 
   ros::NodeHandle n;
   ros::Publisher marker_pub;
