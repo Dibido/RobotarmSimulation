@@ -6,26 +6,26 @@ int main(int argc, char **argv)
 
   if (argc >= 5)
   {
-    float argX, argY, argZ;
-    argX = atof(argv[1]);
-    argY = atof(argv[2]);
-    argZ = atof(argv[3]);
-    std::string argName = std::string(argv[4]);
-    Cup c(argName, argX, argY, argZ);
-    c.handleCollision();
+    float lArgX, lArgY, lArgZ;
+    lArgX = atof(argv[1]);
+    lArgY = atof(argv[2]);
+    lArgZ = atof(argv[3]);
+    std::string lArgName = std::string(argv[4]);
+    Cup gCup(lArgName, lArgX, lArgY, lArgZ);
+    gCup.handleCollision();
   }
   else
   {
-    Cup c("cup");
-    c.handleCollision();
+    Cup gCup("cup");
+    gCup.handleCollision();
   }
 
   return 0;
 }
 
-Cup::Cup(std::string aTopic, float aOriginalX, float aOriginalY, float aOriginalZ) : cupPosX(aOriginalX), cupPosY(aOriginalY), cupPosZ(aOriginalZ), topic(aTopic)
+Cup::Cup(std::string aTopic, float aOriginalX, float aOriginalY, float aOriginalZ) : mCupPosX(aOriginalX), mCupPosY(aOriginalY), mCupPosZ(aOriginalZ), mTopic(aTopic)
 {
-  pastFrameTime = ros::Time::now();
+  mPastFrameTime = ros::Time::now();
   marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
 
   publishCup();
@@ -41,10 +41,10 @@ void Cup::publishCup() const
   geometry_msgs::TransformStamped static_transformStamped;
   static_transformStamped.header.stamp = ros::Time::now();
   static_transformStamped.header.frame_id = "base_link";
-  static_transformStamped.child_frame_id = topic;
-  static_transformStamped.transform.translation.x = cupPosX;
-  static_transformStamped.transform.translation.y = cupPosY;
-  static_transformStamped.transform.translation.z = cupPosZ;
+  static_transformStamped.child_frame_id = mTopic;
+  static_transformStamped.transform.translation.x = mCupPosX;
+  static_transformStamped.transform.translation.y = mCupPosY;
+  static_transformStamped.transform.translation.z = mCupPosZ;
   tf2::Quaternion quat;
 
   quat.setRPY(0, 0, 0);
@@ -55,65 +55,65 @@ void Cup::publishCup() const
   static_broadcaster.sendTransform(static_transformStamped);
 }
 
-void Cup::showCup(const COLORS::ColorState color) const
+void Cup::showCup(const COLORS::ColorState aColor) const
 {
-  visualization_msgs::Marker marker;
-  marker.header.frame_id = topic;
-  marker.header.stamp = ros::Time::now();
-  marker.ns = "cupObject_" + topic;
-  marker.id = 0;
-  marker.type = visualization_msgs::Marker::CYLINDER;
-  marker.action = visualization_msgs::Marker::ADD;
+  visualization_msgs::Marker lMarker;
+  lMarker.header.frame_id = mTopic;
+  lMarker.header.stamp = ros::Time::now();
+  lMarker.ns = "cupObject_" + mTopic;
+  lMarker.id = 0;
+  lMarker.type = visualization_msgs::Marker::CYLINDER;
+  lMarker.action = visualization_msgs::Marker::ADD;
 
-  marker.pose.position.x = 0;
-  marker.pose.position.y = 0;
-  marker.pose.position.z = CUP_SIZE;
-  marker.pose.orientation.x = 0;
-  marker.pose.orientation.y = 0;
-  marker.pose.orientation.z = 0;
-  marker.pose.orientation.w = 1.0;
-  marker.scale.x = CUP_SIZE;
-  marker.scale.y = CUP_SIZE;
-  marker.scale.z = CUP_SIZE * 2;
-  marker.lifetime = ros::Duration();
+  lMarker.pose.position.x = 0;
+  lMarker.pose.position.y = 0;
+  lMarker.pose.position.z = CUP_SIZE;
+  lMarker.pose.orientation.x = 0;
+  lMarker.pose.orientation.y = 0;
+  lMarker.pose.orientation.z = 0;
+  lMarker.pose.orientation.w = 1.0;
+  lMarker.scale.x = CUP_SIZE;
+  lMarker.scale.y = CUP_SIZE;
+  lMarker.scale.z = CUP_SIZE * 2;
+  lMarker.lifetime = ros::Duration();
 
-  setColor(color, marker);
+  setColor(aColor, lMarker);
 
-  marker_pub.publish(marker);
+  marker_pub.publish(lMarker);
   ros::spinOnce();
 }
 
-void Cup::showMarker(const COLORS::ColorState color,const std::string &frameName,const float offset) const
+void Cup::showMarker(const COLORS::ColorState aColor,const std::string& aFrameName,const float aOffset) const
 {
-  visualization_msgs::Marker marker;
-  marker.header.frame_id = frameName;
-  marker.header.stamp = ros::Time::now();
-  marker.ns = "marker_" + frameName;
-  marker.id = 0;
-  marker.type = visualization_msgs::Marker::SPHERE;
-  marker.action = visualization_msgs::Marker::ADD;
+  visualization_msgs::Marker lMarker;
+  lMarker.header.frame_id = aFrameName;
+  lMarker.header.stamp = ros::Time::now();
+  lMarker.ns = "marker_" + aFrameName;
+  lMarker.id = 0;
+  lMarker.type = visualization_msgs::Marker::SPHERE;
+  lMarker.action = visualization_msgs::Marker::ADD;
 
-  marker.pose.position.x = 0;
-  marker.pose.position.y = offset;
-  marker.pose.position.z = GRIPPER_DEPTH;
-  marker.pose.orientation.x = 0;
-  marker.pose.orientation.y = 0;
-  marker.pose.orientation.z = 0;
-  marker.pose.orientation.w = 1.0;
-  marker.scale.x = 0.005;
-  marker.scale.y = 0.005;
-  marker.scale.z = 0.005;
-  marker.lifetime = ros::Duration();
+  lMarker.pose.position.x = 0;
+  lMarker.pose.position.y = aOffset;
+  lMarker.pose.position.z = GRIPPER_DEPTH;
+  lMarker.pose.orientation.x = 0;
+  lMarker.pose.orientation.y = 0;
+  lMarker.pose.orientation.z = 0;
+  lMarker.pose.orientation.w = 1.0;
+  lMarker.scale.x = 0.005;
+  lMarker.scale.y = 0.005;
+  lMarker.scale.z = 0.005;
+  lMarker.lifetime = ros::Duration();
 
-  setColor(color, marker);
+  setColor(aColor, lMarker);
 
-  marker_pub.publish(marker);
+  marker_pub.publish(lMarker);
   ros::spinOnce();
 }
 
 void Cup::handleCollision()
 {
-  tf::Vector3 gripperOffset;
+  tf::Vector3 lGripperOffset;
   ros::Rate rate(300.0);
   while (n.ok())
   {
@@ -129,38 +129,37 @@ void Cup::handleCollision()
 
     try
     {
-      std::string topicFrame = std::string("/") + topic;
+      std::string topicFrame = std::string("/") + mTopic;
       listener.lookupTransform(WORLD_OBJECT, topicFrame, ros::Time(0), cup);
       listener.lookupTransform(topicFrame, FRAME_NAME_GRIPPER_LEFT, ros::Time(0), leftGripper);
       listener.lookupTransform(topicFrame, FRAME_NAME_GRIPPER_RIGHT, ros::Time(0), rightGripper);
       listener.lookupTransform(WORLD_OBJECT, FRAME_NAME_GRIPPER_LEFT, ros::Time(0), newPosLeft);
       listener.lookupTransform(WORLD_OBJECT, FRAME_NAME_GRIPPER_RIGHT, ros::Time(0), newPosRight);
 
-      if (isOpbjectInGripper(leftGripper) && isOpbjectInGripper(rightGripper))
+      if (isObjectInGripper(leftGripper) && isObjectInGripper(rightGripper))
       {
-        cupPosY = (newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2;
-        cupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
+        mCupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
+        mCupPosY = (newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2;
 
-        auto newPosCupZ = ((newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2) - gripperOffset.z() + 0.005;
+        auto lNewCupPosZ = ((newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2) - lGripperOffset.z() + 0.005;
 
-        if (newPosCupZ > 0)
-          cupPosZ = newPosCupZ;
+        if (lNewCupPosZ > 0)
+          mCupPosZ = lNewCupPosZ;
 
-        color = COLORS::GREEN;
+        mColor = COLORS::GREEN;
       }
       else
       {
-        gripperOffset = leftGripper.getOrigin();
-        color = COLORS::RED;
+        lGripperOffset = leftGripper.getOrigin();
+        mColor = COLORS::RED;
 
         if (cup.getOrigin().z() > 0)
         {
-          auto timePast = ros::Time::now() - pastFrameTime;
-          float dropMulitplayer = timePast.toSec() / calculateFallingTime(cup);
-          cupPosZ -= cup.getOrigin().z() * dropMulitplayer;
+          auto lTimePast = ros::Time::now() - mPastFrameTime;
+          float lDropMultiplier = lTimePast.toSec() / calculateFallingTime(cup);
+          mCupPosZ -= cup.getOrigin().z() * lDropMultiplier;
         }
       }
-
       publishCup();
     }
     catch (tf::TransformException ex)
@@ -169,47 +168,45 @@ void Cup::handleCollision()
       ros::Duration(1.0).sleep();
     }
 
-    
+    showCup(mColor);
 
-    showCup(color);
-
-    pastFrameTime = ros::Time::now();
+    mPastFrameTime = ros::Time::now();
     rate.sleep();
   }
 }
 
-void Cup::setColor(const COLORS::ColorState color, visualization_msgs::Marker &marker) const
+void Cup::setColor(const COLORS::ColorState aColor, visualization_msgs::Marker& aMarker) const
 {
-  switch (color)
+  switch (aColor)
   {
   case COLORS::ColorState::RED:
-    marker.color.r = 1.0f;
-    marker.color.g = 0.0f;
-    marker.color.b = 0.0f;
-    marker.color.a = 1.0;
+    aMarker.color.r = 1.0f;
+    aMarker.color.g = 0.0f;
+    aMarker.color.b = 0.0f;
+    aMarker.color.a = 1.0;
     break;
 
   case COLORS::ColorState::GREEN:
-    marker.color.r = 0.0f;
-    marker.color.g = 1.0f;
-    marker.color.b = 0.0f;
-    marker.color.a = 1.0;
+    aMarker.color.r = 0.0f;
+    aMarker.color.g = 1.0f;
+    aMarker.color.b = 0.0f;
+    aMarker.color.a = 1.0;
     break;
   }
 }
 
-bool Cup::isOpbjectInGripper(const tf::StampedTransform &object) const
+bool Cup::isObjectInGripper(const tf::StampedTransform& aObject) const
 {
-  const float widthMargin = CUP_SIZE - GRIPPER_DEPTH;
-  const float heightMargin = (CUP_SIZE * 2) - GRIPPER_DEPTH;
+  const float lWidthMargin = CUP_SIZE - GRIPPER_DEPTH;
+  const float lHeightMargin = (CUP_SIZE * 2) - GRIPPER_DEPTH;
 
-  return (object.getOrigin().y() > widthMargin * -1 && object.getOrigin().y() < widthMargin) && (object.getOrigin().x() > widthMargin * -1 && object.getOrigin().x() < widthMargin) && (object.getOrigin().z() > heightMargin * -1 && object.getOrigin().z() < heightMargin);
+  return (aObject.getOrigin().y() > lWidthMargin * -1 && aObject.getOrigin().y() < lWidthMargin) && (aObject.getOrigin().x() > lWidthMargin * -1 && aObject.getOrigin().x() < lWidthMargin) && (aObject.getOrigin().z() > lHeightMargin * -1 && aObject.getOrigin().z() < lHeightMargin);
 }
 
-float Cup::calculateFallingTime(const tf::StampedTransform &object) const
+float Cup::calculateFallingTime(const tf::StampedTransform& aObject) const
 {
   const float FORCE_OF_GRAVITY = 9.5;
 
-  float value = 2 * object.getOrigin().z() / FORCE_OF_GRAVITY;
-  return sqrt(value);
+  float lValue = 2 * aObject.getOrigin().z() / FORCE_OF_GRAVITY;
+  return sqrt(lValue);
 }
