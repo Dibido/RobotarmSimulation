@@ -13,15 +13,24 @@
 
 #define MINSIMULATEDDEGREES -3.14
 #define MAXSIMULATEDDEGREES 3.14
+#define MINGRIPPERINVALUE 1
+#define MAXGRIPPERINVALUE 4
 #define MINGRIPPERDEGREES -0.02
 #define MAXGRIPPERDEGREES 0.02
+#define NUMBEROFGRIPPERPOSITIONS 5
 #define MINPULSEWIDTH 500
 #define MAXPULSEWIDTH 2500
 
 class RobotarmController
 {
   public:
+    /**
+     * @brief Construct a new Robotarm Controller object
+     */
     RobotarmController();
+    /**
+     * @brief Destroy the Robotarm Controller object
+     */
     ~RobotarmController();
     
     /**
@@ -30,20 +39,27 @@ class RobotarmController
     void updateRobotArmPosition();
 
   private:
+    /**
+      * @brief The nodehandler for the Subscriber and Publisher
+      */
     ros::NodeHandle mNodeHandler;
+    /**
+     * @brief The subscriber that listens for robotarm commands
+     */
     ros::Subscriber mRobotarmCommandSubscriber;
+    /**
+     * @brief The Publisher that publishes the robotarm position
+     */
     ros::Publisher mRobotarmPublisher;
-
+    /**
+     * @brief Whether the robotarm has reached its goal position
+     */
     bool mReachedPosition;
 
     /**
      * @brief Initialize the communication
      */
     void initializeCommunication();
-    /**
-     * @brief Initialize the necessary values
-     */
-    void initializeValues();
 
     // Robotarm position variables
     std::vector<std::string> mJointNames;
@@ -51,9 +67,18 @@ class RobotarmController
     std::vector<double> mGoalPositions;
     std::vector<double> mJointVelocities;
 
+    /**
+     * @brief The time to take for the current move in milliseconds
+     */
     unsigned int mMoveTime;
+    /**
+     * @brief The time passed in the current move in milliseconds
+     */
     unsigned int mMoveCount;
 
+    /**
+     * @brief Timers for timing the move
+     */
     std::chrono::high_resolution_clock::time_point mPreviousMoveTime;
     std::chrono::high_resolution_clock::time_point mMoveStartTime;
 
@@ -68,6 +93,10 @@ class RobotarmController
      */
     void handleCommand(std::string aCommand);
 
+    /**
+     * @brief Callback function for the robotarmCommands, parses and handles the recieved command
+     * @param aRobotarmCommand - A command for the robotarm
+     */
     void robotarmCommandCallback(const std_msgs::String::ConstPtr& aRobotarmCommand);
 
       /**

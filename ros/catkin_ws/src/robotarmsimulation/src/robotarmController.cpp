@@ -9,7 +9,6 @@ int main(int argc, char **argv)
   {
     ros::spinOnce();
     lRobotarmController.updateRobotArmPosition();
-    
   }
   return 0;
 }
@@ -25,7 +24,6 @@ RobotarmController::RobotarmController() : mJointNames{"base_link2turret", "turr
                                            mPreviousMoveTime(std::chrono::high_resolution_clock::now())
 {
   initializeCommunication();
-  initializeValues();
 }
 
 RobotarmController::~RobotarmController()
@@ -36,10 +34,6 @@ void RobotarmController::initializeCommunication()
 {
   mRobotarmCommandSubscriber = mNodeHandler.subscribe("robotarmCommand", 1000, &RobotarmController::robotarmCommandCallback, this);
   mRobotarmPublisher = mNodeHandler.advertise<sensor_msgs::JointState>("joint_states", 1000);
-}
-
-void RobotarmController::initializeValues()
-{
 }
 
 void RobotarmController::sendCurrentStateToVisualizer()
@@ -82,7 +76,7 @@ void RobotarmController::handleCommand(std::string aCommand)
 {
   // Parse command, always parse for all the servo's
   std::string lOriginalString = aCommand;
-  // Get the servo id's and pulsewidth
+  // Get the servo pulsewidths
   std::string lSubstring;
   mGoalPositions.clear();
   lSubstring = lOriginalString.substr(lOriginalString.find("#") + 1);
@@ -105,10 +99,8 @@ void RobotarmController::handleCommand(std::string aCommand)
     mGoalPositions.at(i) = mapValues(mGoalPositions.at(i), MINPULSEWIDTH, MAXPULSEWIDTH, MINSIMULATEDDEGREES, MAXSIMULATEDDEGREES);
   }
   // Convert to gripper
-  mGoalPositions.at(5) = mGoalPositions.at(5) / 500;
-  std::cout << "Before :" << mGoalPositions.at(5) << std::endl;
-  mGoalPositions.at(5) = mapValues(mGoalPositions.at(5), 1, 4, MINGRIPPERDEGREES, MAXGRIPPERDEGREES);
-  std::cout << "After :" << mGoalPositions.at(5) << std::endl;
+  mGoalPositions.at(5) = mGoalPositions.at(5) / (MAXPULSEWIDTH / NUMBEROFGRIPPERPOSITIONS);
+  mGoalPositions.at(5) = mapValues(mGoalPositions.at(5), MINGRIPPERINVALUE, MAXGRIPPERINVALUE, MINGRIPPERDEGREES, MAXGRIPPERDEGREES);
   // Calculate differences per millisecond from current position
   for (int i = 0; i < mJointPositions.size(); i++)
   {
