@@ -136,17 +136,21 @@ void Cup::handleCollision()
       listener.lookupTransform(WORLD_OBJECT, FRAME_NAME_GRIPPER_LEFT, ros::Time(0), newPosLeft);
       listener.lookupTransform(WORLD_OBJECT, FRAME_NAME_GRIPPER_RIGHT, ros::Time(0), newPosRight);
 
-      if (isObjectInGripper(leftGripper) && isObjectInGripper(rightGripper))
+      if (isObjectInGripper(leftGripper) + isObjectInGripper(rightGripper) == PICK_UP_COUNT)
       {
         mCupPosX = (newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2;
         mCupPosY = (newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2;
 
-        auto lNewCupPosZ = ((newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2) - lGripperOffset.z() + 0.005;
+        auto lNewCupPosZ = ((newPosLeft.getOrigin().z() + newPosRight.getOrigin().z()) / 2) - lGripperOffset.z() + PICK_UP_OFFSET;
 
         if (lNewCupPosZ > 0)
           mCupPosZ = lNewCupPosZ;
 
         mColor = COLORS::GREEN;
+      }else if(isObjectInGripper(leftGripper) + isObjectInGripper(rightGripper) == PUSH_TO_SIDE_COUNT)
+      {
+        mCupPosX = ((newPosLeft.getOrigin().x() + newPosRight.getOrigin().x()) / 2) - lGripperOffset.x();
+        mCupPosY = ((newPosLeft.getOrigin().y() + newPosRight.getOrigin().y()) / 2) - lGripperOffset.y();
       }
       else
       {

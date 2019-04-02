@@ -17,6 +17,12 @@
 #define CUP_SIZE 0.04
 #define GRIPPER_DEPTH 0.01
 
+#define PUSH_TO_SIDE_COUNT 1
+#define PICK_UP_COUNT 2
+#define PICK_UP_OFFSET 0.005
+
+
+
 //Frames
 #define FRAME_NAME_GRIPPER_LEFT "/gripper_left"
 #define FRAME_NAME_GRIPPER_RIGHT "/gripper_right"
