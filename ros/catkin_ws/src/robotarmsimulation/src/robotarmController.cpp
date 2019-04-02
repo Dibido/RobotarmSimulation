@@ -5,13 +5,6 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "robotarmController");
   RobotarmController lRobotarmController;
 
-  std::cout << "#0 : " << lRobotarmController.mapValues(0.58, MINSIMULATEDDEGREES, MAXSIMULATEDDEGREES, MINPULSEWIDTH, MAXPULSEWIDTH) << std::endl;
-  std::cout << "#1 : " << lRobotarmController.mapValues(-0.63, MINSIMULATEDDEGREES, MAXSIMULATEDDEGREES, MINPULSEWIDTH, MAXPULSEWIDTH) << std::endl;
-  std::cout << "#2 : " << lRobotarmController.mapValues(0.35, MINSIMULATEDDEGREES, MAXSIMULATEDDEGREES, MINPULSEWIDTH, MAXPULSEWIDTH) << std::endl;
-  std::cout << "#3 : " << lRobotarmController.mapValues(0.97, MINSIMULATEDDEGREES, MAXSIMULATEDDEGREES, MINPULSEWIDTH, MAXPULSEWIDTH) << std::endl;
-  std::cout << "#4 : " << lRobotarmController.mapValues(0.0, MINSIMULATEDDEGREES, MAXSIMULATEDDEGREES, MINPULSEWIDTH, MAXPULSEWIDTH) << std::endl;
-  std::cout << "#5 : " << lRobotarmController.mapValues(0.0, MINGRIPPERDEGREES, MAXGRIPPERDEGREES, MINPULSEWIDTH, MAXPULSEWIDTH) << std::endl;
-
   while (ros::ok())
   {
     ros::spinOnce();
